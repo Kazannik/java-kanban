@@ -1,14 +1,11 @@
-import domain.TaskBase;
-import domain.TaskManager;
-import service.ReportTasks;
-import utils.Tests;
+import dev.TaskManager;
+import dev.domain.AbstractTask;
+import dev.service.ConsoleSubmenu;
+import dev.service.ReportTasks;
+import dev.utils.Tests;
 
 import java.util.Collection;
 import java.util.Scanner;
-
-import static service.ConsoleSubmenu.*;
-import static service.ReportTasks.LINE_LENGTH;
-import static service.ReportTasks.printTasksCollection;
 
 public class Main {
     private static final String EXIT_KEYS = "e";
@@ -18,7 +15,7 @@ public class Main {
 
     public static void main(String[] args) {
         manager = new TaskManager();
-        Scanner scanner = getScanner();
+        Scanner scanner = ConsoleSubmenu.getScanner();
 
         System.out.println("Трекер задач");
         while (true) {
@@ -74,8 +71,8 @@ public class Main {
     static void getAllTasks() {
         if (isNotNullTasks()) {
             System.out.println("Список всех задач:");
-            Collection<TaskBase> tasks = manager.getAllTasks();
-            printTasksCollection(tasks);
+            Collection<AbstractTask> tasks = manager.getAllTasks();
+            ReportTasks.printTasksCollection(tasks);
         }
     }
 
@@ -89,30 +86,30 @@ public class Main {
     static void getTask() {
         if (isNotNullTasks()) {
             System.out.println("Получение задачи по ее идентификатору");
-            TaskBase task = inputTask(manager);
+            AbstractTask task = ConsoleSubmenu.inputTask(manager);
             if (task != null) {
                 ReportTasks.printTask(task);
-                System.out.println("=".repeat(LINE_LENGTH));
+                System.out.println("=".repeat(ReportTasks.LINE_LENGTH));
             }
         }
     }
 
     static void createTask() {
         System.out.println("Создание задачи");
-        inputCreateTask(manager);
+        ConsoleSubmenu.inputCreateTask(manager);
     }
 
     static void updateTask() {
         if (isNotNullTasks()) {
             System.out.println("Обновление задачи");
-            inputUpdateTask(manager);
+            ConsoleSubmenu.inputUpdateTask(manager);
         }
     }
 
     static void removeTask() {
         if (isNotNullTasks()) {
             System.out.println("Удаление задачи по идентификатору");
-            inputRemoveTask(manager);
+            ConsoleSubmenu.inputRemoveTask(manager);
         }
     }
 
