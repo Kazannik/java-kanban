@@ -129,12 +129,9 @@ public class TaskManager {
     }
 
     public List<AbstractTask> getSubtasks() {
-        List<AbstractTask> result = new ArrayList<>();
-        for (AbstractTask task : getEpics()) {
-            Epic epic = (Epic) task;
-            result.addAll(epic.getAllTasks());
-        }
-        return result;
+        return tasks.values().stream().filter(Epic.class::isInstance)
+                .map(e -> ((Epic) e).getAllTasks())
+                .collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
     }
 
     public void removeAllTasks() {
