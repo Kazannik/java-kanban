@@ -115,7 +115,7 @@ public class MainMenu {
     }
 
     static void getHistory(TaskManager manager) {
-        System.out.println("Вывод истории просмотра");
+        System.out.println("Вывод истории просмотра (10 позиций)");
         List<TaskBase> tasks = manager.getHistory();
         ReportUtils.printTasksCollection(tasks);
     }

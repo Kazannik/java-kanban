@@ -65,9 +65,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask createSubtask(int epicId, String name) {
         if (epics.containsKey(epicId)) {
-            Epic epic = epics.get(epicId);
             int newTaskId = CollectionUtils.getNextTaskId(getAllTaskId());
-            return epic.create(newTaskId, name);
+            Subtask subtask = new Subtask(epicId,newTaskId, name);
+            subtasks.put(newTaskId, subtask);
+            Epic epic = epics.get(epicId);
+            epic.updateStatus();
+            return subtask;
         } else {
             throw new IndexOutOfBoundsException("Идентификационный номер эпик-задачи отсутствует в коллекции.");
         }
@@ -104,9 +107,9 @@ public class InMemoryTaskManager implements TaskManager {
             throw new IndexOutOfBoundsException("Подзадача с идентификационным номером " +
                     subtask.getTaskId() + " уже была создана ранее.");
         } else {
+            subtasks.put(subtask.getTaskId(), subtask);
             Epic epic = epics.get(subtask.getEpicId());
-            subtasks.put(subtask.getEpicId(), subtask);
-            epic.create(subtask);
+            epic.updateStatus();
             return subtask.getTaskId();
         }
     }
@@ -149,6 +152,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void update(Subtask subtask) {
         if (subtasks.containsKey(subtask.getTaskId())) {
             subtasks.put(subtask.getTaskId(), subtask);
+            Epic epic = epics.get(subtask.getEpicId());
+            epic.updateStatus();
         } else {
             throw new IndexOutOfBoundsException("Подзадача с заданным идентификационным номером отсутствует" +
                     " в коллекции.");
@@ -278,7 +283,7 @@ public class InMemoryTaskManager implements TaskManager {
             Subtask subtask = subtasks.get(taskId);
             Epic epic = epics.get(subtask.getEpicId());
             subtasks.remove(taskId);
-            epic.removeSubtask(taskId);
+            epic.updateStatus();
         } else {
             throw new IndexOutOfBoundsException("Идентификационный номер (эпик/под)задачи отсутствует в коллекции.");
         }

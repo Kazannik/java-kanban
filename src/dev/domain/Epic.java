@@ -28,10 +28,7 @@ public class Epic extends Task {
     // ТЗ №3: Создание. Сам объект должен передаваться в качестве параметра.
     public void create(Subtask subtask) {
         if (!subtasks.contains(subtask.getTaskId())) {
-            if (!manager.containsSubtaskId(subtask.getTaskId())) {
-                manager.create(subtask);
-            }
-            subtasks.add(subtask.getTaskId());
+            manager.create(subtask);
             updateStatus();
         } else {
             throw new IndexOutOfBoundsException("Подзадача с идентификационным номером " +
@@ -53,7 +50,6 @@ public class Epic extends Task {
     public Subtask create(int taskId, String name, String description) {
         Subtask addingSubtask = new Subtask(this.getTaskId(), taskId, name, description);
         manager.create(addingSubtask);
-        subtasks.add(taskId);
         updateStatus();
         return addingSubtask;
     }
@@ -71,7 +67,12 @@ public class Epic extends Task {
         }
     }
 
-    private void updateStatus() {
+    public void updateStatus() {
+        subtasks.clear();
+        subtasks.addAll(manager.getSubtasks().stream()
+                .filter(subtask -> subtask.getEpicId().equals(this.getTaskId()))
+                .map(AbstractTask::getTaskId)
+                .collect(Collectors.toList()));
         if (subtasks.size() == 0) {
             status = TaskStatusEnum.NEW;
         } else {
@@ -103,11 +104,10 @@ public class Epic extends Task {
 
     public void removeSubtask(Integer taskId) {
         if (subtasks.contains(taskId)) {
-            subtasks.remove(taskId);
-            updateStatus();
             if (manager.containsSubtaskId(taskId)) {
                 manager.removeTask(taskId);
             }
+            updateStatus();
         } else {
             throw new IndexOutOfBoundsException("Идентификационный номер задачи " +
                     taskId + " отсутствует в коллекции.");
@@ -115,7 +115,9 @@ public class Epic extends Task {
     }
 
     public void removeAllTasks() {
-        subtasks.clear();
+        for (Integer id: subtasks) {
+            manager.removeTask(id);
+        }
         updateStatus();
     }
 
@@ -123,7 +125,7 @@ public class Epic extends Task {
     public Object clone() {
         super.clone();
         Epic cloneableEpic = new Epic(this.manager, this.getTaskId(), this.getName(), this.getDescription());
-        cloneableEpic.subtasks.addAll(subtasks);
+        cloneableEpic.updateStatus();
         return cloneableEpic;
     }
 

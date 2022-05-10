@@ -1,6 +1,5 @@
 package dev.domain;
 
-
 public class Task extends AbstractTask {
 
     public Task(int taskId, String name, String description, TaskStatusEnum status) {
