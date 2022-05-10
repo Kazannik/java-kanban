@@ -1,68 +1,60 @@
 package dev.domain;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Set;
+import dev.service.TaskManager;
 
-/* ТЗ: должны выполняться следующие условия:
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/* ТЗ №3: должны выполняться следующие условия:
 • Для каждой подзадачи известно, в рамках какого эпика она выполняется.
 • Каждый эпик знает, какие подзадачи в него входят.
 • Завершение всех подзадач эпика считается завершением эпика. */
-public class Epic extends AbstractTask {
-    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+public class Epic extends Task {
+    private final TaskManager manager;
+    private final List<Integer> subtasks;
 
-    public Epic(int taskId, String name, String description) {
+    public Epic(TaskManager manager, int taskId, String name, String description) {
         super(taskId, name, description);
+        this.manager = manager;
+        this.subtasks = new ArrayList<>();
+        this.status = TaskStatusEnum.NEW;
     }
 
-    public Epic(String name, String description) {
-        super(name, description);
+    public Epic(TaskManager manager, int taskId, String name) {
+        this(manager, taskId, name, "");
     }
 
-    public Epic(String name) {
-        this(name, "");
-    }
-
-    public Epic(int taskId, String name) {
-        this(taskId, name, "");
-    }
-
-    public TaskStatusEnum getStatus() {
-        if (subtasks.size() == 0) {
-            return TaskStatusEnum.NEW;
-        } else {
-            TaskStatusEnum result = null;
-            for (Subtask subtask : subtasks.values()) {
-                result = TaskStatusEnum.compareEnum(result, subtask.getStatus());
-            }
-            return result;
-        }
-    }
-
-    // ТЗ: Создание. Сам объект должен передаваться в качестве параметра.
+    // ТЗ №3: Создание. Сам объект должен передаваться в качестве параметра.
     public void create(Subtask subtask) {
-        if (!subtasks.containsKey(subtask.getTaskId())) {
-            subtasks.put(subtask.getTaskId(), subtask);
+        if (!subtasks.contains(subtask.getTaskId())) {
+            if (!manager.containsSubtaskId(subtask.getTaskId())) {
+                manager.create(subtask);
+            }
+            subtasks.add(subtask.getTaskId());
+            updateStatus();
         } else {
-            throw new IndexOutOfBoundsException("Подзадача с таким идентификационным номером уже присутствует" +
-                    " в коллекции.");
+            throw new IndexOutOfBoundsException("Подзадача с идентификационным номером " +
+                    subtask.getTaskId() + " уже присутствует в коллекции.");
         }
     }
 
-    // ТЗ: Обновление. Новая версия объекта с верным идентификатором передаются в виде параметра.
-    public void update(int taskId, Subtask subtask) {
-        if (subtasks.containsKey(taskId)) {
-            subtask.setTaskId(taskId);
-            subtasks.put(taskId, subtask);
+    // ТЗ №3: Обновление. Новая версия объекта с верным идентификатором передаются в виде параметра.
+    public void update(Subtask subtask) {
+        if (subtasks.contains(subtask.getTaskId())) {
+            manager.update(subtask);
+            updateStatus();
         } else {
-            throw new IndexOutOfBoundsException("Подзадача с заданным идентификационным номером отсутствует" +
-                    " в коллекции.");
+            throw new IndexOutOfBoundsException("Подзадача с идентификационным номером " +
+                    subtask.getTaskId() + " отсутствует в коллекции.");
         }
     }
 
     public Subtask create(int taskId, String name, String description) {
-        Subtask addingSubtask = new Subtask(this, taskId, name, description);
-        subtasks.put(taskId, addingSubtask);
+        Subtask addingSubtask = new Subtask(this.getTaskId(), taskId, name, description);
+        manager.create(addingSubtask);
+        subtasks.add(taskId);
+        updateStatus();
         return addingSubtask;
     }
 
@@ -70,11 +62,23 @@ public class Epic extends AbstractTask {
         return create(taskId, name, "");
     }
 
-    public Subtask getTask(int taskId) {
-        if (subtasks.containsKey(taskId)) {
-            return subtasks.get(taskId);
+    public Subtask getSubtask(Integer taskId) {
+        if (subtasks.contains(taskId)) {
+            return manager.getSubtask(taskId);
         } else {
-            throw new IndexOutOfBoundsException("Идентификационный номер задачи отсутствует в коллекции.");
+            throw new IndexOutOfBoundsException("Идентификационный номер задачи " +
+                    taskId + " отсутствует в коллекции.");
+        }
+    }
+
+    private void updateStatus() {
+        if (subtasks.size() == 0) {
+            status = TaskStatusEnum.NEW;
+        } else {
+            status = manager.getSubtask(subtasks.get(0)).status;
+            for (int i = 1; i < subtasks.size(); i++) {
+                status = TaskStatusEnum.compareEnum(status, manager.getSubtask(subtasks.get(i)).status);
+            }
         }
     }
 
@@ -82,38 +86,54 @@ public class Epic extends AbstractTask {
         return subtasks.size();
     }
 
-    public boolean containsTaskId(int taskId) {
-        return subtasks.containsKey(taskId);
+    public boolean containsSubtaskId(Integer taskId) {
+        return subtasks.contains(taskId);
     }
 
-    public Set<Integer> keySet(){
-        return subtasks.keySet();
+    public List<Integer> subtaskIdList() {
+        return subtasks;
     }
 
-    // ТЗ: Получение списка всех подзадач определённого эпика.
-    public Collection<Subtask> getAllTasks() {
-        return subtasks.values();
+    // ТЗ №3: Получение списка всех подзадач определённого эпика.
+    public List<Subtask> getAllSubtasks() {
+        return manager.getSubtasks().stream()
+                .filter(subtask -> subtask.getEpicId().equals(this.getTaskId()))
+                .collect(Collectors.toList());
     }
 
-    public void removeTask(int taskId) {
-        if (subtasks.containsKey(taskId)) {
+    public void removeSubtask(Integer taskId) {
+        if (subtasks.contains(taskId)) {
             subtasks.remove(taskId);
+            updateStatus();
+            if (manager.containsSubtaskId(taskId)) {
+                manager.removeTask(taskId);
+            }
         } else {
-            throw new IndexOutOfBoundsException("Идентификационный номер задачи отсутствует в коллекции.");
+            throw new IndexOutOfBoundsException("Идентификационный номер задачи " +
+                    taskId + " отсутствует в коллекции.");
         }
     }
 
     public void removeAllTasks() {
         subtasks.clear();
+        updateStatus();
+    }
+
+    @Override
+    public Object clone() {
+        super.clone();
+        Epic cloneableEpic = new Epic(this.manager, this.getTaskId(), this.getName(), this.getDescription());
+        cloneableEpic.subtasks.addAll(subtasks);
+        return cloneableEpic;
     }
 
     @Override
     public String toString() {
         return "Epic{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", taskId=" + taskId + '\'' +
-                ", status=" + getStatus().getTitle()  + '\'' +
+                "name='" + this.getName() + '\'' +
+                ", description='" + this.getDescription() + '\'' +
+                ", taskId=" + this.getTaskId() + '\'' +
+                ", status=" + status.title + '\'' +
                 ", size=" + size() +
                 '}';
     }
@@ -128,8 +148,8 @@ public class Epic extends AbstractTask {
         if (getTaskId() != epic.getTaskId()) return false;
         if (!getName().equals(epic.getName())) return false;
         if (!getDescription().equals(epic.getDescription())) return false;
-        if (!getStatus().equals(epic.getStatus())) return false;
-        return getAllTasks().equals(epic.getAllTasks());
+        if (!status.equals(epic.status)) return false;
+        return subtasks.equals(epic.subtasks);
     }
 
     @Override
@@ -137,8 +157,8 @@ public class Epic extends AbstractTask {
         int result = getName().hashCode();
         result = 31 * result + getDescription().hashCode();
         result = 31 * result + getTaskId();
-        result = 31 * result + getStatus().hashCode();
-        result = 31 * result + getAllTasks().hashCode();
+        result = 31 * result + status.hashCode();
+        result = 31 * result + subtasks.hashCode();
         return result;
     }
 }

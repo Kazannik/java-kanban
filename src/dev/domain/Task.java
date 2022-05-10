@@ -2,15 +2,9 @@ package dev.domain;
 
 
 public class Task extends AbstractTask {
-    protected TaskStatusEnum status;
 
     public Task(int taskId, String name, String description, TaskStatusEnum status) {
         super(taskId, name, description);
-        this.status = status;
-    }
-
-    public Task(String name, String description, TaskStatusEnum status) {
-        super(name, description);
         this.status = status;
     }
 
@@ -22,18 +16,6 @@ public class Task extends AbstractTask {
         this(taskId, name, "", TaskStatusEnum.NEW);
     }
 
-    public Task(String name, String description) {
-        this(name, description, TaskStatusEnum.NEW);
-    }
-
-    public Task(String name) {
-        this(name, "");
-    }
-
-    public TaskStatusEnum getStatus() {
-        return status;
-    }
-
     public void setStatus(TaskStatusEnum status) {
         this.status = status;
     }
@@ -41,11 +23,16 @@ public class Task extends AbstractTask {
     @Override
     public String toString() {
         return "Task{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", taskId=" + taskId + '\'' +
-                ", status=" + status.getTitle() +
+                "name='" + this.getName() + '\'' +
+                ", description='" + this.getDescription() + '\'' +
+                ", taskId=" + this.getTaskId() + '\'' +
+                ", status=" + status.title +
                 '}';
+    }
+
+    @Override
+    public Object clone() {
+        return new Task(this.getTaskId(), this.getName(), this.getDescription(), this.status);
     }
 
     @Override
@@ -58,7 +45,7 @@ public class Task extends AbstractTask {
         if (getTaskId() != task.getTaskId()) return false;
         if (!getName().equals(task.getName())) return false;
         if (!getDescription().equals(task.getDescription())) return false;
-        return getStatus().equals(task.getStatus());
+        return status.equals(task.status);
     }
 
     @Override
@@ -66,7 +53,7 @@ public class Task extends AbstractTask {
         int result = getName().hashCode();
         result = 31 * result + getDescription().hashCode();
         result = 31 * result + getTaskId();
-        result = 31 * result + getStatus().hashCode();
+        result = 31 * result + status.hashCode();
         return result;
     }
 }

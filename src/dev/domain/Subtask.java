@@ -1,35 +1,47 @@
 package dev.domain;
 
-/* ТЗ: должны выполняться следующие условия:
+/* ТЗ №3: должны выполняться следующие условия:
 • Для каждой подзадачи известно, в рамках какого эпика она выполняется.
 • Каждый эпик знает, какие подзадачи в него входят.
 • Завершение всех подзадач эпика считается завершением эпика. */
 public class Subtask extends Task {
-    private final Epic parentEpic;
+    private final Integer parentEpicId;
 
-    public Subtask(Epic parent, int taskId, String name, String description) {
+    public Subtask(Integer parentEpicId, int taskId, String name, String description, TaskStatusEnum status) {
+        super(taskId, name, description, status);
+        this.parentEpicId = parentEpicId;
+    }
+
+    public Subtask(Integer parentEpicId, int taskId, String name, String description) {
         super(taskId, name, description);
-        parentEpic = parent;
+        this.parentEpicId = parentEpicId;
     }
 
-    public Subtask(Epic parent, int taskId, String name) {
-        this(parent, taskId, name, "");
+    public Subtask(Integer parentEpicId, int taskId, String name) {
+        super(taskId, name);
+        this.parentEpicId = parentEpicId;
     }
 
-    // ТЗ: Для каждой подзадачи известно, в рамках какого эпика она выполняется.
-    public Epic getEpic() {
-        return parentEpic;
+    // ТЗ №3: Для каждой подзадачи известно, в рамках какого эпика она выполняется.
+    public Integer getEpicId() {
+        return parentEpicId;
     }
 
     @Override
     public String toString() {
         return "Subtask{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", taskId=" + taskId + '\'' +
-                ", status=" + status.getTitle() + '\'' +
-                ", epicTaskId=" + parentEpic.getTaskId() +
+                "name='" + this.getName() + '\'' +
+                ", description='" + this.getDescription() + '\'' +
+                ", taskId=" + this.getTaskId() + '\'' +
+                ", status=" + status.title + '\'' +
+                ", epicTaskId=" + parentEpicId +
                 '}';
+    }
+
+    @Override
+    public Object clone() {
+        super.clone();
+        return new Subtask(this.parentEpicId, this.getTaskId(), this.getName(), this.getDescription(), this.status);
     }
 
     @Override
@@ -42,8 +54,8 @@ public class Subtask extends Task {
         if (getTaskId() != subtask.getTaskId()) return false;
         if (!getName().equals(subtask.getName())) return false;
         if (!getDescription().equals(subtask.getDescription())) return false;
-        if (!getStatus().equals(subtask.getStatus())) return false;
-        return parentEpic.taskId == subtask.parentEpic.taskId;
+        if (!status.equals(subtask.status)) return false;
+        return parentEpicId.equals(subtask.parentEpicId);
     }
 
     @Override
@@ -51,8 +63,8 @@ public class Subtask extends Task {
         int result = getName().hashCode();
         result = 31 * result + getDescription().hashCode();
         result = 31 * result + getTaskId();
-        result = 31 * result + getStatus().hashCode();
-        result = 31 * result + parentEpic.taskId;
+        result = 31 * result + status.hashCode();
+        result = 31 * result + parentEpicId;
         return result;
     }
 }

@@ -1,25 +1,29 @@
 package dev.domain;
 
-/* ТЗ: У задачи есть следующие свойства:
+/* ТЗ №3: У задачи есть следующие свойства:
 1.	Название, кратко описывающее суть задачи (например, «Переезд»).
 2.	Описание, в котором раскрываются детали.
 3.	Уникальный идентификационный номер задачи, по которому её можно будет найти.
 4.	Статус, отображающий её прогресс. */
-public abstract class AbstractTask {
-    protected String name;
-    protected String description;
-    protected int taskId;
+abstract class AbstractTask implements TaskBase {
+    private String name;
+    private String description;
+    protected TaskStatusEnum status;
+    private final int taskId;
 
     protected AbstractTask(int taskId, String name, String description) {
         this.taskId = taskId;
         this.name = name;
         this.description = description;
+        this.status = TaskStatusEnum.NEW;
     }
 
-    protected AbstractTask(String name, String description) {
-        this(-1, name, description);
+    @Override
+    public int getTaskId() {
+        return taskId;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -28,6 +32,7 @@ public abstract class AbstractTask {
         this.name = name;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
@@ -36,25 +41,28 @@ public abstract class AbstractTask {
         this.description = description;
     }
 
-    public int getTaskId() {
-        return taskId;
+    @Override
+    public TaskStatusEnum getStatus() {
+        return status;
     }
-
-    public void setTaskId(int taskId) {
-        this.taskId = taskId;
-    }
-
-    public abstract TaskStatusEnum getStatus();
 
     @Override
     public String toString() {
-        return "TaskBase{" +
+        return "AbstractTask {" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", taskId=" + taskId + '\'' +
-                ", status=" + getStatus().getTitle() +
+                ", status=" + getStatus().title +
                 '}';
     }
+
+    @Override
+    public int compareTo(TaskBase o) {
+        return Integer.compare(taskId, o.getTaskId());
+    }
+
+    @Override
+    public abstract Object clone();
 
     @Override
     public abstract boolean equals(Object o);
