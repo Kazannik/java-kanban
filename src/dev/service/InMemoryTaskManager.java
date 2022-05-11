@@ -1,6 +1,9 @@
 package dev.service;
 
-import dev.domain.*;
+import dev.domain.Epic;
+import dev.domain.Subtask;
+import dev.domain.Task;
+import dev.domain.TaskBase;
 import dev.utils.CollectionUtils;
 
 import java.util.ArrayList;
@@ -41,6 +44,14 @@ public class InMemoryTaskManager implements TaskManager {
         return Stream.concat(epics.values().stream(),
                         Stream.concat(subtasks.values().stream(),
                                 tasks.values().stream()))
+                .sorted(new TaskComparator())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TaskBase> getHighLevelTasks() {
+        return Stream.concat(epics.values().stream(),
+                        tasks.values().stream())
                 .sorted(new TaskComparator())
                 .collect(Collectors.toList());
     }

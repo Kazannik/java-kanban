@@ -13,6 +13,8 @@ public interface TaskManager {
     List<Subtask> getSubtasks();
     List<TaskBase> getAllTasks();
 
+    List<TaskBase> getHighLevelTasks();
+
     Task createTask(String name);
     Epic createEpic(String name);
     Subtask createSubtask(int epicId, String name);

@@ -72,7 +72,7 @@ public class MainMenu {
     static void getAllTasks(TaskManager manager) {
         if (isNotNullTasks(manager)) {
             System.out.println("Список всех задач:");
-            List<TaskBase> tasks = manager.getAllTasks();
+            List<TaskBase> tasks = manager.getHighLevelTasks();
             ReportUtils.printTasksCollection(tasks);
         }
     }
