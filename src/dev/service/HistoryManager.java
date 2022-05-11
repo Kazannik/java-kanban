@@ -10,5 +10,6 @@ import java.util.List;
  а второй getHistory() — возвращать их список. */
 public interface HistoryManager {
     void add(TaskBase task);
+
     List<TaskBase> getHistory();
 }

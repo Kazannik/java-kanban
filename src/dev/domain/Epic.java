@@ -115,7 +115,7 @@ public class Epic extends Task {
     }
 
     public void removeAllTasks() {
-        for (Integer id: subtasks) {
+        for (Integer id : subtasks) {
             manager.removeTask(id);
         }
         updateStatus();

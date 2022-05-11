@@ -77,7 +77,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Subtask createSubtask(int epicId, String name) {
         if (epics.containsKey(epicId)) {
             int newTaskId = CollectionUtils.getNextTaskId(getAllTaskId());
-            Subtask subtask = new Subtask(epicId,newTaskId, name);
+            Subtask subtask = new Subtask(epicId, newTaskId, name);
             subtasks.put(newTaskId, subtask);
             Epic epic = epics.get(epicId);
             epic.updateStatus();
@@ -286,7 +286,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (tasks.containsKey(taskId)) {
             tasks.remove(taskId);
         } else if (epics.containsKey(taskId)) {
-            for (Integer subtaskId: epics.get(taskId).subtaskIdList()) {
+            for (Integer subtaskId : epics.get(taskId).subtaskIdList()) {
                 subtasks.remove(subtaskId);
             }
             epics.remove(taskId);

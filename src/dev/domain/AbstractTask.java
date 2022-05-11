@@ -6,10 +6,10 @@ package dev.domain;
 3.	Уникальный идентификационный номер задачи, по которому её можно будет найти.
 4.	Статус, отображающий её прогресс. */
 abstract class AbstractTask implements TaskBase {
+    private final int taskId;
+    protected TaskStatusEnum status;
     private String name;
     private String description;
-    protected TaskStatusEnum status;
-    private final int taskId;
 
     protected AbstractTask(int taskId, String name, String description) {
         this.taskId = taskId;
