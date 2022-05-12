@@ -6,10 +6,7 @@ import dev.domain.Task;
 import dev.domain.TaskBase;
 import dev.utils.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,10 +38,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<TaskBase> getAllTasks() {
-        return Stream.concat(epics.values().stream(),
-                        Stream.concat(subtasks.values().stream(),
-                                tasks.values().stream()))
-                .sorted(new TaskComparator())
+        return Stream.of(epics.values(),
+                        subtasks.values(),
+                        tasks.values())
+                .flatMap(Collection::stream)
+                .sorted(Comparator.comparing(TaskBase::getTaskId))
                 .collect(Collectors.toList());
     }
 
@@ -52,7 +50,7 @@ public class InMemoryTaskManager implements TaskManager {
     public List<TaskBase> getHighLevelTasks() {
         return Stream.concat(epics.values().stream(),
                         tasks.values().stream())
-                .sorted(new TaskComparator())
+                .sorted(Comparator.comparing(TaskBase::getTaskId))
                 .collect(Collectors.toList());
     }
 
@@ -67,7 +65,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic createEpic(String name) {
         int newTaskId = CollectionUtils.getNextTaskId(getAllTaskId());
-        Epic addingEpic = new Epic(this, newTaskId, name);
+        Epic addingEpic = new Epic(newTaskId, name);
         addingEpic.setName(name);
         epics.put(newTaskId, addingEpic);
         return addingEpic;
@@ -185,10 +183,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Integer> getAllTaskId() {
-        return Stream.concat(epics.values().stream(),
-                        Stream.concat(subtasks.values().stream(),
-                                tasks.values().stream()))
+        return Stream.of(epics.values(), subtasks.values(), tasks.values())
+                .flatMap(Collection::stream)
                 .map(TaskBase::getTaskId)
+                .sorted()
                 .collect(Collectors.toList());
     }
 

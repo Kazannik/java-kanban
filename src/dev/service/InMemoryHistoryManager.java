@@ -2,15 +2,15 @@ package dev.service;
 
 import dev.domain.TaskBase;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private static final int RECORD_COUNT = 10;
-    private List<TaskBase> history;
+    private final LinkedList<TaskBase> history;
 
     public InMemoryHistoryManager() {
-        history = new ArrayList<>();
+        history = new LinkedList<>();
     }
 
     /* ТЗ №4: От повторных просмотров избавляться не нужно. */
@@ -26,8 +26,8 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     private void trimHistory() {
-        if (history.size() > RECORD_COUNT) {
-            history = history.subList(history.size() - RECORD_COUNT, history.size());
+        while (history.size() > RECORD_COUNT) {
+            history.removeFirst();
         }
     }
 }

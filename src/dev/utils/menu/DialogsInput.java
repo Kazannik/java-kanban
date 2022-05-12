@@ -131,7 +131,7 @@ public class DialogsInput {
         String name = DialogsInput.inputText("Название эпик-задачи: ");
         String description = DialogsInput.inputText(INPUT_DESCRIPTION_CAPTION);
         int epicId = CollectionUtils.getNextTaskId(manager.getAllTaskId());
-        Epic epic = new Epic(manager, epicId, name, description);
+        Epic epic = new Epic(epicId, name, description);
         manager.create(epic);
         System.out.println(INPUT_STATUS_CAPTION + epic.getStatus().title + ".");
         out.println("Созданной эпик-задаче присвоен идентификационный номер: " + epic.getTaskId());

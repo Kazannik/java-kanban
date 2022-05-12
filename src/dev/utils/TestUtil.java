@@ -30,7 +30,7 @@ public final class TestUtil {
         manager.create(lessonTask);
 
         nextTaskId = CollectionUtils.getNextTaskId(manager.getAllTaskId());
-        Epic removalEpic = new Epic(manager, nextTaskId,
+        Epic removalEpic = new Epic(nextTaskId,
                 "Переезд", "Снять наличные деньги");
         manager.create(removalEpic);
 
@@ -50,7 +50,7 @@ public final class TestUtil {
         removalEpic.create(tapeSubtask);
 
         nextTaskId = CollectionUtils.getNextTaskId(manager.getAllTaskId());
-        Epic epicParty = new Epic(manager, nextTaskId, "Вечеринка");
+        Epic epicParty = new Epic(nextTaskId, "Вечеринка");
         epicParty.setDescription("Поздравление с праздником в коллективе");
         manager.create(epicParty);
 
@@ -123,7 +123,7 @@ public final class TestUtil {
         manager.create(shoppingTask);
 
         nextTaskId = CollectionUtils.getNextTaskId(manager.getAllTaskId());
-        Epic repairEpic = new Epic(manager, nextTaskId,
+        Epic repairEpic = new Epic(nextTaskId,
                 "Эпик-задача 1", "Создаю пустую эпик-задачу с индексом 1.");
         manager.create(repairEpic);
 
