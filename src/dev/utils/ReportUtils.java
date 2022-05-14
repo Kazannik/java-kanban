@@ -7,7 +7,7 @@ import dev.domain.TaskBase;
 
 import java.util.List;
 
-public class ReportUtils {
+public final class ReportUtils {
     public static final int LINE_LENGTH = 60;
 
     public static void printTask(TaskBase task) {
