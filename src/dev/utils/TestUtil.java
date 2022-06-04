@@ -106,6 +106,8 @@ public final class TestUtil {
         ReportUtils.printTasksCollection(manager.getSubtasks().stream()
                 .map(t -> (TaskBase) t)
                 .collect(Collectors.toList()));
+
+        System.out.println("Тест по ТЗ №3 выполнен.");
     }
 
     /* ТЗ №4: В главном классе воспроизведите несложный пользовательский сценарий:
@@ -163,7 +165,7 @@ public final class TestUtil {
         System.out.println("Результат:");
         ReportUtils.printTasksCollection(manager.getHighLevelTasks());
 
-        System.out.println("\nПечатаем историю просмотра.");
+        System.out.println("\nПечатаем историю просмотра. (ТЗ №5: Ограничения на 10 позиций больше нет!)");
         ReportUtils.printTasksCollection(manager.getHistory());
 
         System.out.println("\nВызываем задания 12 раз в цикле по одному.");
@@ -179,7 +181,93 @@ public final class TestUtil {
             index++;
         }
 
+        System.out.println("\nПечатаем историю просмотра. (ТЗ №5: Ограничения на 10 позиций больше нет!)");
+        ReportUtils.printTasksCollection(manager.getHistory());
+
+        System.out.println("Тест по ТЗ №4 выполнен.");
+    }
+
+    /* ТЗ №5: После написания менеджера истории проверьте его работу:
+        •	создайте две задачи, эпик с тремя подзадачами и эпик без подзадач;
+        •	запросите созданные задачи несколько раз в разном порядке;
+        •	после каждого запроса выведите историю и убедитесь, что в ней нет повторов;
+        •	удалите задачу, которая есть в истории, и проверьте, что при печати она не будет выводиться;
+        •	удалите эпик с тремя подзадачами и убедитесь, что из истории удалился как сам эпик, так и все его подзадачи.
+    */
+    public static void testSprint5(TaskManager manager) {
+        manager.removeAllTasks();
+        System.out.println("Тестирование приложения по условиям, заданным в техническом задании Спринта №5:");
+
+        System.out.println("\n1.\tСоздайте две задачи, эпик с тремя подзадачами и эпик без подзадач;");
+
+        int nextTaskId = CollectionUtils.getNextTaskId(manager.getAllTaskId());
+        Task task = new Task(nextTaskId, "Задача 1", "Создаю обычную задачу с индексом 0.");
+        manager.create(task);
+
+        nextTaskId = CollectionUtils.getNextTaskId(manager.getAllTaskId());
+        task = new Task(nextTaskId, "Задача 2", "Создаю обычную задачу с индексом 1.");
+        manager.create(task);
+
+        nextTaskId = CollectionUtils.getNextTaskId(manager.getAllTaskId());
+        Epic epic = new Epic(nextTaskId,
+                "Эпик-задача 1", "Создаю эпик-задачу с индексом 2, в которой будет создано три подзадачи.");
+        manager.create(epic);
+
+        nextTaskId = CollectionUtils.getNextTaskId(manager.getAllTaskId());
+        Subtask subtask = new Subtask(epic.getTaskId(), nextTaskId,
+                "Подзадача 1", "Создаю подзадачу с индексом 3.");
+        epic.create(subtask);
+
+        nextTaskId = CollectionUtils.getNextTaskId(manager.getAllTaskId());
+        subtask = new Subtask(epic.getTaskId(), nextTaskId,
+                "Подзадача 2", "Создаю подзадачу с индексом 4.");
+        epic.create(subtask);
+
+        nextTaskId = CollectionUtils.getNextTaskId(manager.getAllTaskId());
+        subtask = new Subtask(epic.getTaskId(), nextTaskId,
+                "Подзадача 3", "Создаю подзадачу с индексом 5.");
+        epic.create(subtask);
+
+        nextTaskId = CollectionUtils.getNextTaskId(manager.getAllTaskId());
+        epic = new Epic(nextTaskId,
+                "Эпик-задача 2", "Создаю эпик-задачу с индексом 6 без подзадач.");
+        manager.create(epic);
+
+        System.out.println("Результат:");
+        ReportUtils.printTasksCollection(manager.getHighLevelTasks());
+
+        System.out.println("\n2.\tЗапросите созданные задачи несколько раз в разном порядке;");
+        System.out.println("\nВызываю задачи 20 раз в случайном порядке.");
+        for (int i = 0; i < 20; i++) {
+            int randomId = (int)(Math.random() * 7);
+            TaskBase randomTask = manager.getTaskBase(randomId);
+            System.out.print((i + 1) + ") ");
+            ReportUtils.printTask(randomTask);
+        }
+
+        System.out.println("\n3.\tПосле каждого запроса выведите историю и убедитесь, что в ней нет повторов;");
+
         System.out.println("\nПечатаем историю просмотра.");
         ReportUtils.printTasksCollection(manager.getHistory());
+
+        System.out.println("\n4.\tУдалите задачу, которая есть в истории, и проверьте," +
+                " что при печати она не будет выводиться;");
+
+        manager.removeTask(0);
+        System.out.println("\nУдалили задачу с идентификатором 0.");
+
+        System.out.println("\nПечатаем историю просмотра.");
+        ReportUtils.printTasksCollection(manager.getHistory());
+
+        System.out.println("\n5.\tУдалите эпик с тремя подзадачами и убедитесь, что из истории удалился как сам эпик," +
+                " так и все его подзадачи.");
+
+        manager.removeTask(2);
+        System.out.println("\nУдалили эпик с идентификатором 2.");
+
+        System.out.println("\nПечатаем историю просмотра.");
+        ReportUtils.printTasksCollection(manager.getHistory());
+
+        System.out.println("Тест по ТЗ №5 выполнен.");
     }
 }

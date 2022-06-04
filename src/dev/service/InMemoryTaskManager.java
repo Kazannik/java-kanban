@@ -283,15 +283,19 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeTask(int taskId) {
         if (tasks.containsKey(taskId)) {
             tasks.remove(taskId);
+            Managers.getDefaultHistory().remove(taskId);
         } else if (epics.containsKey(taskId)) {
             for (Integer subtaskId : epics.get(taskId).subtaskIdList()) {
                 subtasks.remove(subtaskId);
+                Managers.getDefaultHistory().remove(subtaskId);
             }
             epics.remove(taskId);
+            Managers.getDefaultHistory().remove(taskId);
         } else if (subtasks.containsKey(taskId)) {
             Subtask subtask = subtasks.get(taskId);
             Epic epic = epics.get(subtask.getEpicId());
             subtasks.remove(taskId);
+            Managers.getDefaultHistory().remove(taskId);
             epic.updateStatus();
         } else {
             throw new IndexOutOfBoundsException("Идентификационный номер (эпик/под)задачи отсутствует в коллекции.");
@@ -303,7 +307,7 @@ public class InMemoryTaskManager implements TaskManager {
         tasks.clear();
         epics.clear();
         subtasks.clear();
-        getHistory().clear();
+        Managers.getDefaultHistory().clear();
     }
 
     @Override
