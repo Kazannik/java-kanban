@@ -8,20 +8,18 @@ import java.util.List;
 import java.util.Map;
 
 public class CustomLinkedList<E extends TaskBase> {
-    Map<Integer, Node<E>> nodesMap = new HashMap<Integer, Node<E>>();
+    private Map<Integer, Node<E>> nodesMap = new HashMap<Integer, Node<E>>();
+    private Node<E> first;
+    private Node<E> last;
 
-    Node<E> first;
-
-    Node<E> last;
-
-    public void add(TaskBase task) {
+    public void add(E task) {
         remove(task.getTaskId());
-        linkLast((E) task);
+        linkLast(task);
         nodesMap.put(task.getTaskId(), last);
     }
 
     /* linkLast будет добавлять задачу в конец этого списка  */
-    void linkLast(E e) {
+    private void linkLast(E e) {
         final Node<E> l = last;
         final Node<E> newNode = new Node<>(l, e, null);
         last = newNode;
@@ -38,7 +36,7 @@ public class CustomLinkedList<E extends TaskBase> {
         }
     }
 
-    void removeNode(Node<E> node) {
+    private void removeNode(Node<E> node) {
         final Node<E> next = node.next;
         final Node<E> prev = node.prev;
 
@@ -73,8 +71,8 @@ public class CustomLinkedList<E extends TaskBase> {
     /* ТЗ №5: собирать все задачи из него в обычный ArrayList.
     Реализация метода getHistory должна перекладывать задачи из связного списка
     в ArrayList для формирования ответа. */
-    public List<TaskBase> getTasks() {
-        List<TaskBase> result = new ArrayList<>();
+    public List<E> getTasks() {
+        List<E> result = new ArrayList<>();
         for (Node<E> x = first; x != null; x = x.next) {
             result.add(x.item);
         }
