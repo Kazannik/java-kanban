@@ -10,13 +10,13 @@ import java.util.List;
 public final class ReportUtils {
     public static final int LINE_LENGTH = 60;
 
-    public static void printTask(TaskBase task) {
+    public static void printTask(TaskBase task, boolean printAttachSubtask) {
         if (task instanceof Epic) {
             Epic epic = (Epic) task;
             System.out.println("=".repeat(LINE_LENGTH));
             printTask(epic, 0);
             List<Subtask> subtasks = epic.getAllSubtasks();
-            if (subtasks.size() > 0) {
+            if (printAttachSubtask && subtasks.size() > 0) {
                 System.out.println("-".repeat(LINE_LENGTH));
                 System.out.println(" ".repeat(4) + "Список подзадач:");
                 for (TaskBase subtask : subtasks) {
@@ -51,10 +51,10 @@ public final class ReportUtils {
         System.out.println(" ".repeat(margin) + "Статус: " + task.getStatus().title + ".");
     }
 
-    public static void printTasksCollection(List<TaskBase> tasks) {
+    public static void printTasksCollection(List<TaskBase> tasks, boolean printAttachSubtask) {
         if (tasks.size() > 0) {
             for (TaskBase task : tasks) {
-                printTask(task);
+                printTask(task, printAttachSubtask);
             }
             System.out.println("=".repeat(LINE_LENGTH));
         } else {

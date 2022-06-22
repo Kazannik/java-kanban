@@ -139,6 +139,23 @@ public class Epic extends Task {
     }
 
     @Override
+    public String toString(String separator) {
+        return String.format(
+                "%s" + separator +
+                        "%s" + separator +
+                        "%s" + separator +
+                        "%s" + separator +
+                        "%s" + separator +
+                        "%d\n",
+                getTaskId(),
+                TaskTypeEnum.EPIC.key,
+                getName(),
+                getStatus().key,
+                getDescription(),
+                0);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Epic)) return false;

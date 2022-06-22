@@ -39,6 +39,23 @@ public class Subtask extends Task {
     }
 
     @Override
+    public String toString(String separator) {
+        return String.format(
+                "%s" + separator +
+                        "%s" + separator +
+                        "%s" + separator +
+                        "%s" + separator +
+                        "%s" + separator +
+                        "%d\n",
+                getTaskId(),
+                TaskTypeEnum.SUBTASK.key,
+                getName(),
+                getStatus().key,
+                getDescription(),
+                getEpicId());
+    }
+
+    @Override
     public Object clone() {
         super.clone();
         return new Subtask(this.parentEpicId, this.getTaskId(), this.getName(), this.getDescription(), this.status);

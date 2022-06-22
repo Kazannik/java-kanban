@@ -1,7 +1,8 @@
 package dev.utils.menu;
 
 import dev.domain.TaskBase;
-import dev.service.TaskManager;
+import dev.service.Managers;
+import dev.service.TasksManager;
 import dev.utils.ReportUtils;
 import dev.utils.TestUtil;
 
@@ -23,7 +24,7 @@ public class MainMenu {
         return scanner;
     }
 
-    public static void Menu(TaskManager manager) {
+    public static void Menu(TasksManager manager) {
         Scanner scanner = getScanner();
 
         while (true) {
@@ -49,7 +50,7 @@ public class MainMenu {
                     removeTask(manager);
                     break;
                 case "7":
-                    getHistory(manager);
+                    getHistory();
                     break;
                 case "8":
                     TestUtil.testSprint3(manager);
@@ -72,58 +73,58 @@ public class MainMenu {
         }
     }
 
-    static void getAllTasks(TaskManager manager) {
+    static void getAllTasks(TasksManager manager) {
         if (isNotNullTasks(manager)) {
             System.out.println("Список всех задач:");
             List<TaskBase> tasks = manager.getHighLevelTasks();
-            ReportUtils.printTasksCollection(tasks);
+            ReportUtils.printTasksCollection(tasks, true);
         }
     }
 
-    static void removeAllTasks(TaskManager manager) {
+    static void removeAllTasks(TasksManager manager) {
         if (isNotNullTasks(manager)) {
             manager.removeAllTasks();
             System.out.println("Все задачи удалены!");
         }
     }
 
-    static void getTask(TaskManager manager) {
+    static void getTask(TasksManager manager) {
         if (isNotNullTasks(manager)) {
             System.out.println("Получение задачи по ее идентификатору");
             TaskBase task = inputTask(manager);
             if (task != null) {
-                ReportUtils.printTask(task);
+                ReportUtils.printTask(task, true);
                 System.out.println("=".repeat(ReportUtils.LINE_LENGTH));
             }
         }
     }
 
-    static void createTask(TaskManager manager) {
+    static void createTask(TasksManager manager) {
         System.out.println("Создание задачи");
         menuCreateTask(manager);
     }
 
-    static void updateTask(TaskManager manager) {
+    static void updateTask(TasksManager manager) {
         if (isNotNullTasks(manager)) {
             System.out.println("Обновление задачи");
             menuUpdateTask(manager);
         }
     }
 
-    static void removeTask(TaskManager manager) {
+    static void removeTask(TasksManager manager) {
         if (isNotNullTasks(manager)) {
             System.out.println("Удаление задачи по идентификатору");
             menuRemoveTask(manager);
         }
     }
 
-    static void getHistory(TaskManager manager) {
+    static void getHistory() {
         System.out.println("Вывод истории просмотра");
-        List<TaskBase> tasks = manager.getHistory();
-        ReportUtils.printTasksCollection(tasks);
+        List<TaskBase> tasks = Managers.getDefaultHistory().getHistory();
+        ReportUtils.printTasksCollection(tasks, false);
     }
 
-    static boolean isNotNullTasks(TaskManager manager) {
+    static boolean isNotNullTasks(TasksManager manager) {
         if (manager.allSize() == 0) {
             System.out.println("Внимание! Задачи в трекере отсутствуют.");
             return false;

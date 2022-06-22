@@ -1,7 +1,7 @@
 package dev.utils.menu;
 
 import dev.domain.*;
-import dev.service.TaskManager;
+import dev.service.TasksManager;
 
 import java.util.Scanner;
 
@@ -13,7 +13,7 @@ import static java.lang.System.out;
 
 public class SubMenu {
 
-    public static void menuUpdateTask(TaskManager manager) {
+    public static void menuUpdateTask(TasksManager manager) {
         Integer taskId = inputTaskId();
         if (taskId != null) {
             if (manager.containsTaskBaseId(taskId)) {
@@ -33,7 +33,7 @@ public class SubMenu {
         }
     }
 
-    public static void menuCreateTask(TaskManager manager) {
+    public static void menuCreateTask(TasksManager manager) {
         Scanner scanner = getScanner();
         while (true) {
             printTaskTypeMenu();
@@ -65,7 +65,7 @@ public class SubMenu {
         }
     }
 
-    public static void menuEditEpic(Epic epic, TaskManager manager) {
+    public static void menuEditEpic(Epic epic, TasksManager manager) {
         Scanner scanner = getScanner();
         while (true) {
             printEditMenu();
@@ -140,7 +140,7 @@ public class SubMenu {
         }
     }
 
-    public static void menuRemoveTask(TaskManager manager) {
+    public static void menuRemoveTask(TasksManager manager) {
         Integer taskId = inputTaskId();
         if (taskId != null) {
             if (manager.containsTaskBaseId(taskId)) {

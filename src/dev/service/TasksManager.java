@@ -7,7 +7,7 @@ import dev.domain.TaskBase;
 
 import java.util.List;
 
-public interface TaskManager {
+public interface TasksManager {
     List<Epic> getEpics();
 
     List<Task> getTasks();
@@ -69,6 +69,4 @@ public interface TaskManager {
     void removeTask(int taskId);
 
     void removeAllTasks();
-
-    List<TaskBase> getHistory();
 }

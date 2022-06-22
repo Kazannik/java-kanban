@@ -1,7 +1,8 @@
 package dev.utils;
 
 import dev.domain.*;
-import dev.service.TaskManager;
+import dev.service.Managers;
+import dev.service.TasksManager;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,7 +14,7 @@ public final class TestUtil {
     Измените статусы созданных объектов, распечатайте. Проверьте, что статус задачи
     и подзадачи сохранился, а статус эпика рассчитался по статусам подзадач.
     И, наконец, попробуйте удалить одну из задач и один из эпиков. */
-    public static void testSprint3(TaskManager manager) {
+    public static void testSprint3(TasksManager manager) {
         manager.removeAllTasks();
         System.out.println("Тестирование приложения по условиям, заданным в техническом задании Спринта №3:");
 
@@ -60,7 +61,7 @@ public final class TestUtil {
         epicParty.create(barSubtask);
 
         System.out.println("Результат:");
-        ReportUtils.printTasksCollection(manager.getHighLevelTasks());
+        ReportUtils.printTasksCollection(manager.getHighLevelTasks(), true);
 
         System.out.println("\n2.\tИзмените статусы созданных объектов, распечатайте. Проверьте, что статус задачи\n"
                 + "и подзадачи сохранился, а статус эпика рассчитался по статусам подзадач.");
@@ -83,29 +84,29 @@ public final class TestUtil {
         removalEpic.update(updateBarSubtask);
 
         System.out.println("Результат:");
-        ReportUtils.printTasksCollection(manager.getHighLevelTasks());
+        ReportUtils.printTasksCollection(manager.getHighLevelTasks(), true);
 
         System.out.println("\n3.\tПопробуйте удалить одну из задач и один из эпиков.");
         manager.removeTask(0);
         manager.removeTask(epicParty.getTaskId());
 
         System.out.println("Результат:");
-        ReportUtils.printTasksCollection(manager.getHighLevelTasks());
+        ReportUtils.printTasksCollection(manager.getHighLevelTasks(), true);
 
         System.out.println("\n4.\t Печать по отдельным категориям. Только задачи:");
         ReportUtils.printTasksCollection(manager.getTasks().stream()
                 .map(t -> (TaskBase) t)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList()), true);
 
         System.out.println("\n5.\t Печать по отдельным категориям. Только эпики:");
         ReportUtils.printTasksCollection(manager.getEpics().stream()
                 .map(t -> (TaskBase) t)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList()), true);
 
         System.out.println("\n6.\t Печать по отдельным категориям. Только подзадачи:");
         ReportUtils.printTasksCollection(manager.getSubtasks().stream()
                 .map(t -> (TaskBase) t)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList()), true);
 
         System.out.println("Тест по ТЗ №3 выполнен.");
     }
@@ -114,7 +115,7 @@ public final class TestUtil {
     -	создайте несколько задач разного типа.
     -	вызовите разные методы интерфейса TaskManager и напечатайте историю просмотров
      после каждого вызова. */
-    public static void testSprint4(TaskManager manager) {
+    public static void testSprint4(TasksManager manager) {
         manager.removeAllTasks();
         System.out.println("Тестирование приложения по условиям, заданным в техническом задании Спринта №4:");
 
@@ -152,7 +153,7 @@ public final class TestUtil {
         manager.create(subtask);
 
         System.out.println("Результат:");
-        ReportUtils.printTasksCollection(manager.getHighLevelTasks());
+        ReportUtils.printTasksCollection(manager.getHighLevelTasks(), true);
 
         System.out.println("\n2.\tВызываем разные методы интерфейса TaskManager\n" +
                 "и напечатаем историю просмотров после каждого вызова");
@@ -163,10 +164,10 @@ public final class TestUtil {
         manager.update(updateShoppingTask);
 
         System.out.println("Результат:");
-        ReportUtils.printTasksCollection(manager.getHighLevelTasks());
+        ReportUtils.printTasksCollection(manager.getHighLevelTasks(), true);
 
         System.out.println("\nПечатаем историю просмотра. (ТЗ №5: Ограничения на 10 позиций больше нет!)");
-        ReportUtils.printTasksCollection(manager.getHistory());
+        ReportUtils.printTasksCollection(Managers.getDefaultHistory().getHistory(), false);
 
         System.out.println("\nВызываем задания 12 раз в цикле по одному.");
         List<Integer> taskIsCollection = manager.getAllTaskId();
@@ -177,12 +178,12 @@ public final class TestUtil {
             }
             TaskBase task = manager.getTaskBase(taskIsCollection.get(index));
             System.out.print((i + 1) + ") ");
-            ReportUtils.printTask(task);
+            ReportUtils.printTask(task, false);
             index++;
         }
 
         System.out.println("\nПечатаем историю просмотра. (ТЗ №5: Ограничения на 10 позиций больше нет!)");
-        ReportUtils.printTasksCollection(manager.getHistory());
+        ReportUtils.printTasksCollection(Managers.getDefaultHistory().getHistory(), false);
 
         System.out.println("Тест по ТЗ №4 выполнен.");
     }
@@ -194,7 +195,7 @@ public final class TestUtil {
         •	удалите задачу, которая есть в истории, и проверьте, что при печати она не будет выводиться;
         •	удалите эпик с тремя подзадачами и убедитесь, что из истории удалился как сам эпик, так и все его подзадачи.
     */
-    public static void testSprint5(TaskManager manager) {
+    public static void testSprint5(TasksManager manager) {
         manager.removeAllTasks();
         System.out.println("Тестирование приложения по условиям, заданным в техническом задании Спринта №5:");
 
@@ -234,7 +235,7 @@ public final class TestUtil {
         manager.create(epic);
 
         System.out.println("Результат:");
-        ReportUtils.printTasksCollection(manager.getHighLevelTasks());
+        ReportUtils.printTasksCollection(manager.getHighLevelTasks(), true);
 
         System.out.println("\n2.\tЗапросите созданные задачи несколько раз в разном порядке;");
         System.out.println("\nВызываю задачи 20 раз в случайном порядке.");
@@ -242,13 +243,13 @@ public final class TestUtil {
             int randomId = (int)(Math.random() * 7);
             TaskBase randomTask = manager.getTaskBase(randomId);
             System.out.print((i + 1) + ") ");
-            ReportUtils.printTask(randomTask);
+            ReportUtils.printTask(randomTask, true);
         }
 
         System.out.println("\n3.\tПосле каждого запроса выведите историю и убедитесь, что в ней нет повторов;");
 
         System.out.println("\nПечатаем историю просмотра.");
-        ReportUtils.printTasksCollection(manager.getHistory());
+        ReportUtils.printTasksCollection(Managers.getDefaultHistory().getHistory(), false);
 
         System.out.println("\n4.\tУдалите задачу, которая есть в истории, и проверьте," +
                 " что при печати она не будет выводиться;");
@@ -257,7 +258,7 @@ public final class TestUtil {
         System.out.println("\nУдалили задачу с идентификатором 0.");
 
         System.out.println("\nПечатаем историю просмотра.");
-        ReportUtils.printTasksCollection(manager.getHistory());
+        ReportUtils.printTasksCollection(Managers.getDefaultHistory().getHistory(), false);
 
         System.out.println("\n5.\tУдалите эпик с тремя подзадачами и убедитесь, что из истории удалился как сам эпик," +
                 " так и все его подзадачи.");
@@ -266,7 +267,7 @@ public final class TestUtil {
         System.out.println("\nУдалили эпик с идентификатором 2.");
 
         System.out.println("\nПечатаем историю просмотра.");
-        ReportUtils.printTasksCollection(manager.getHistory());
+        ReportUtils.printTasksCollection(Managers.getDefaultHistory().getHistory(), false);
 
         System.out.println("Тест по ТЗ №5 выполнен.");
     }

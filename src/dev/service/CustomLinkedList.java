@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CustomLinkedList<E extends TaskBase> {
-    private Map<Integer, Node<E>> nodesMap = new HashMap<Integer, Node<E>>();
+    private final Map<Integer, Node<E>> nodesMap = new HashMap<>();
     private Node<E> first;
     private Node<E> last;
 
@@ -75,6 +75,14 @@ public class CustomLinkedList<E extends TaskBase> {
         List<E> result = new ArrayList<>();
         for (Node<E> x = first; x != null; x = x.next) {
             result.add(x.item);
+        }
+        return result;
+    }
+
+    public List<Integer> getTasksId() {
+        List<Integer> result = new ArrayList<>();
+        for (Node<E> x = first; x != null; x = x.next) {
+            result.add(x.item.getTaskId());
         }
         return result;
     }

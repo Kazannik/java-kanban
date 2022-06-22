@@ -10,12 +10,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class InMemoryTaskManager implements TaskManager {
-    private final Map<Integer, Task> tasks;
-    private final Map<Integer, Epic> epics;
-    private final Map<Integer, Subtask> subtasks;
+public class InMemoryTasksManager implements TasksManager {
+    protected final Map<Integer, Task> tasks;
+    protected final Map<Integer, Epic> epics;
+    protected final Map<Integer, Subtask> subtasks;
 
-    public InMemoryTaskManager() {
+    public InMemoryTasksManager() {
         tasks = new HashMap<>();
         epics = new HashMap<>();
         subtasks = new HashMap<>();
@@ -118,7 +118,7 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             subtasks.put(subtask.getTaskId(), subtask);
             Epic epic = epics.get(subtask.getEpicId());
-            epic.updateStatus();
+            if (epic !=null) epic.updateStatus();
             return subtask.getTaskId();
         }
     }
@@ -308,10 +308,5 @@ public class InMemoryTaskManager implements TaskManager {
         epics.clear();
         subtasks.clear();
         Managers.getDefaultHistory().clear();
-    }
-
-    @Override
-    public List<TaskBase> getHistory() {
-        return Managers.getDefaultHistory().getHistory();
     }
 }

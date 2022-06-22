@@ -1,7 +1,7 @@
 package dev.utils.menu;
 
 import dev.domain.*;
-import dev.service.TaskManager;
+import dev.service.TasksManager;
 import dev.utils.CollectionUtils;
 
 import java.util.Scanner;
@@ -81,7 +81,7 @@ public class DialogsInput {
         }
     }
 
-    public static TaskBase inputTask(TaskManager manager) {
+    public static TaskBase inputTask(TasksManager manager) {
         Integer taskId = inputTaskId();
         if (taskId != null) {
             if (manager.containsTaskBaseId(taskId)) {
@@ -93,7 +93,7 @@ public class DialogsInput {
         return null;
     }
 
-    public static void inputCreateTask(TaskManager manager) {
+    public static void inputCreateTask(TasksManager manager) {
         String name = DialogsInput.inputText("Название задачи: ");
         String description = DialogsInput.inputText(INPUT_DESCRIPTION_CAPTION);
         int taskId = CollectionUtils.getNextTaskId(manager.getAllTaskId());
@@ -103,7 +103,7 @@ public class DialogsInput {
         out.println("Созданной задаче присвоен идентификационный номер: " + task.getTaskId());
     }
 
-    public static void inputUpdateTask(TaskManager manager) {
+    public static void inputUpdateTask(TasksManager manager) {
         Integer taskId = inputTaskId();
         if (taskId != null) {
             if (manager.containsTaskId(taskId)) {
@@ -115,7 +115,7 @@ public class DialogsInput {
         }
     }
 
-    public static void inputUpdateTask(TaskManager manager, Task task) {
+    public static void inputUpdateTask(TasksManager manager, Task task) {
         Task cloneableTask = (Task) task.clone();
         String name = DialogsInput.inputText("Название (предыдущее значение): ", cloneableTask.getName());
         String description = DialogsInput.inputText("Описание (предыдущее значение): ", cloneableTask.getDescription());
@@ -127,7 +127,7 @@ public class DialogsInput {
         System.out.println("Задача № " + cloneableTask.getTaskId() + " успешно отредактирована.");
     }
 
-    public static void inputCreateEpic(TaskManager manager) {
+    public static void inputCreateEpic(TasksManager manager) {
         String name = DialogsInput.inputText("Название эпик-задачи: ");
         String description = DialogsInput.inputText(INPUT_DESCRIPTION_CAPTION);
         int epicId = CollectionUtils.getNextTaskId(manager.getAllTaskId());
@@ -137,7 +137,7 @@ public class DialogsInput {
         out.println("Созданной эпик-задаче присвоен идентификационный номер: " + epic.getTaskId());
     }
 
-    public static void inputUpdateEpic(TaskManager manager) {
+    public static void inputUpdateEpic(TasksManager manager) {
         Integer taskId = inputTaskId();
         if (taskId != null) {
             if (manager.containsEpicId(taskId)) {
@@ -148,7 +148,7 @@ public class DialogsInput {
         }
     }
 
-    public static void inputUpdateEpic(TaskManager manager, Integer taskId) {
+    public static void inputUpdateEpic(TasksManager manager, Integer taskId) {
         if (manager.getEpic(taskId) != null) {
             Epic epic = (Epic) manager.getEpic(taskId).clone();
             String name = DialogsInput.inputText("Название (предыдущее значение): ", epic.getName());
@@ -163,7 +163,7 @@ public class DialogsInput {
         }
     }
 
-    public static void inputCreateSubtask(TaskManager manager) {
+    public static void inputCreateSubtask(TasksManager manager) {
         Integer epicTaskId = inputTaskId();
         if (epicTaskId != null) {
             if (manager.containsEpicId(epicTaskId)) {
@@ -174,7 +174,7 @@ public class DialogsInput {
         }
     }
 
-    public static void inputCreateSubtask(TaskManager manager, Integer epicId) {
+    public static void inputCreateSubtask(TasksManager manager, Integer epicId) {
         String name = DialogsInput.inputText("Название подзадачи: ");
         String description = DialogsInput.inputText(INPUT_DESCRIPTION_CAPTION);
         int taskId = CollectionUtils.getNextTaskId(manager.getAllTaskId());
@@ -184,7 +184,7 @@ public class DialogsInput {
         out.println("Созданной подзадаче присвоен идентификационный номер: " + subtask.getTaskId());
     }
 
-    public static void inputUpdateSubtask(TaskManager manager) {
+    public static void inputUpdateSubtask(TasksManager manager) {
         Integer epicTaskId = inputTaskId();
         if (epicTaskId != null) {
             if (manager.containsEpicId(epicTaskId)) {
@@ -203,7 +203,7 @@ public class DialogsInput {
         }
     }
 
-    public static void inputUpdateSubtask(TaskManager manager, Subtask subtask) {
+    public static void inputUpdateSubtask(TasksManager manager, Subtask subtask) {
         Task cloneableSubtask = (Subtask) subtask.clone();
         String name = DialogsInput.inputText("Название (предыдущее значение): ",
                 cloneableSubtask.getName());
