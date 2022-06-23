@@ -172,12 +172,12 @@ public class InMemoryTasksManager implements TasksManager {
     // ТЗ №3: Обновление. Новая версия объекта с верным идентификатором передаются в виде параметра.
     @Override
     public void update(TaskBase task) {
-        if (task instanceof Task) {
-            update((Task) task);
-        } else if (task instanceof Epic) {
+        if (task instanceof Epic) {
             update((Epic) task);
-        } else {
+        } else if (task instanceof Subtask) {
             update((Subtask) task);
+        } else {
+            update((Task) task);
         }
     }
 

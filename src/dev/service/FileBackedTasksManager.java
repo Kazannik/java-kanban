@@ -107,7 +107,16 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
                 while (reader.ready()) {
                     String line = reader.readLine();
                     if (!line.isBlank()) {
-                        manager.fromString(line);
+                        TaskBase task = fromString(line);
+                        if (task instanceof Epic) {
+                            manager.epics.put(task.getTaskId(), (Epic) task);
+                        } else if (task instanceof Subtask) {
+                            manager.subtasks.put(task.getTaskId(),(Subtask) task);
+                            Epic epic = manager.getEpic(((Subtask) task).getEpicId());
+                            epic.updateStatus();
+                        } else {
+                            manager.tasks.put(task.getTaskId(), (Task) task);
+                        }
                     } else {
                         break;
                     }
@@ -115,7 +124,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
                 String history = reader.readLine();
                 manager.createHistory(history);
             } catch (IOException e) {
-                System.out.println("Произошла ошибка во время чтения файла.");
+                throw new ManagerSaveException("Произошла ошибка во время чтения файла.", e.getCause());
             }
         }
         return manager;
@@ -127,7 +136,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     }
 
     // ТЗ №6: Напишите метод создания задачи из строки Task fromString(String value).
-    private TaskBase fromString(String value) {
+    private static TaskBase fromString(String value) {
         String[] param = value.split("[" + PARAM_SEPARATOR + "]");
         int taskId = Integer.parseInt(param[0]);
         TaskTypeEnum type = TaskTypeEnum.fromKey(param[1]);
@@ -135,21 +144,13 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
         int epicId = Integer.parseInt(param[5]);
         switch (type) {
             case EPIC: {
-                Epic epic = new Epic(taskId, param[2], param[4]);
-                epics.put(taskId, epic);
-                return epic;
+                return new Epic(taskId, param[2], param[4]);
             }
             case SUBTASK: {
-                Subtask subtask = new Subtask(epicId, taskId, param[2], param[4], status);
-                subtasks.put(taskId, subtask);
-                Epic epic = getEpic(epicId);
-                epic.updateStatus();
-                return subtask;
+                return new Subtask(epicId, taskId, param[2], param[4], status);
             }
             default: {
-                Task task = new Task(taskId, param[2], param[4], status);
-                tasks.put(taskId, task);
-                return task;
+                return new Task(taskId, param[2], param[4], status);
             }
         }
     }
@@ -169,21 +170,13 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
             writer.write(COLUMN_HEADER + "\n");
             List<TaskBase> tasks = getAllTasks();
             for (TaskBase task : tasks) {
-                try {
-                    writer.write(task.toString(PARAM_SEPARATOR));
-                } catch (ManagerSaveException e) {
-                    throw new ManagerSaveException("Ошибка записи задания в файл.", task);
-                }
+                writer.write(task.toString(PARAM_SEPARATOR));
             }
-            try {
-                writer.write("\n");
-                String history = toString(Managers.getDefaultHistory());
-                writer.write(history);
-            } catch (ManagerSaveException e) {
-                throw new ManagerSaveException("Ошибка записи истории просмотров в файл.");
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
+            writer.write("\n");
+            String history = toString(Managers.getDefaultHistory());
+            writer.write(history);
+        } catch (IOException e) {
+            throw new ManagerSaveException("Произошла ошибка во время записи в файл.", e.getCause());
         }
     }
 
@@ -260,12 +253,12 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
 
     @Override
     public void update(TaskBase task) {
-        if (task instanceof Task) {
-            update((Task) task);
-        } else if (task instanceof Epic) {
+        if (task instanceof Epic) {
             update((Epic) task);
-        } else {
+        } else if (task instanceof Subtask) {
             update((Subtask) task);
+        } else {
+            update((Task) task);
         }
     }
 
