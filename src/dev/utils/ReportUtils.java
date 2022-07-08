@@ -5,6 +5,9 @@ import dev.domain.Subtask;
 import dev.domain.Task;
 import dev.domain.TaskBase;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public final class ReportUtils {
@@ -45,10 +48,17 @@ public final class ReportUtils {
         } else {
             System.out.println("-;");
         }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm");
+
         System.out.println(" ".repeat(margin) + "Название: " + task.getName() + ";");
         System.out.println(" ".repeat(margin) + "Описание: " + task.getDescription() + ";");
         System.out.println(" ".repeat(margin) + "Идентификатор: " + task.getTaskId() + ";");
         System.out.println(" ".repeat(margin) + "Статус: " + task.getStatus().title + ".");
+        System.out.println(" ".repeat(margin) + "Дата начала: " + (task.getStartTime().isPresent() ?
+                LocalDateTime.ofInstant(task.getStartTime().get(), ZoneId.systemDefault()).format(formatter) : "- ") + ".");
+        System.out.println(" ".repeat(margin) + "Продолжительность: " + task.getDuration() + " мин.");
+        System.out.println(" ".repeat(margin) + "Дата окончания: " + (task.getEndTime().isPresent() ?
+                LocalDateTime.ofInstant(task.getEndTime().get(), ZoneId.systemDefault()).format(formatter) : "- ") + ".");
     }
 
     public static void printTasksCollection(List<TaskBase> tasks, boolean printAttachSubtask) {

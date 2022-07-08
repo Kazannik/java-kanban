@@ -31,6 +31,9 @@ public class MainMenu {
             printMainMenu();
             String command = scanner.nextLine().trim();
             switch (command) {
+                case "0":
+                    getPrioritizedTasks(manager);
+                    break;
                 case "1":
                     getAllTasks(manager);
                     break;
@@ -53,13 +56,18 @@ public class MainMenu {
                     getHistory();
                     break;
                 case "8":
-                    TestUtil.testSprint3(manager);
+                    TestUtil.testSprint3();
                     break;
                 case "9":
-                    TestUtil.testSprint4(manager);
+                    TestUtil.testSprint4();
                     break;
                 case "10":
-                    TestUtil.testSprint5(manager);
+                    TestUtil.testSprint5();
+                case "11":
+                    TestUtil.testSprint6();
+                    break;
+                case "12":
+                    TestUtil.testSprint7();
                     break;
                 case EXIT_KEYS:
                     System.out.println("Завершение работы приложения");
@@ -70,6 +78,14 @@ public class MainMenu {
                     System.out.println();
                     break;
             }
+        }
+    }
+
+    static void getPrioritizedTasks(TasksManager manager) {
+        if (isNotNullTasks(manager)) {
+            System.out.println("Список задач по приоритету:");
+            List<TaskBase> tasks = manager.getPrioritizedTasks();
+            ReportUtils.printTasksCollection(tasks, false);
         }
     }
 

@@ -2,20 +2,24 @@ package dev.domain;
 
 import dev.service.Managers;
 
-import java.util.ArrayList;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /* ТЗ №3: должны выполняться следующие условия:
 • Для каждой подзадачи известно, в рамках какого эпика она выполняется.
 • Каждый эпик знает, какие подзадачи в него входят.
 • Завершение всех подзадач эпика считается завершением эпика. */
-public class Epic extends Task {
+public class Epic extends TaskAbstract {
     private final List<Integer> subtasks;
 
     public Epic(int taskId, String name, String description) {
         super(taskId, name, description);
-        this.subtasks = new ArrayList<>();
+        this.subtasks = new LinkedList<>();
         this.status = TaskStatusEnum.NEW;
     }
 
@@ -27,7 +31,6 @@ public class Epic extends Task {
     public void create(Subtask subtask) {
         if (!subtasks.contains(subtask.getTaskId())) {
             Managers.getDefault().create(subtask);
-            updateStatus();
         } else {
             throw new IndexOutOfBoundsException("Подзадача с идентификационным номером " +
                     subtask.getTaskId() + " уже присутствует в коллекции.");
@@ -38,7 +41,6 @@ public class Epic extends Task {
     public void update(Subtask subtask) {
         if (subtasks.contains(subtask.getTaskId())) {
             Managers.getDefault().update(subtask);
-            updateStatus();
         } else {
             throw new IndexOutOfBoundsException("Подзадача с идентификационным номером " +
                     subtask.getTaskId() + " отсутствует в коллекции.");
@@ -48,7 +50,6 @@ public class Epic extends Task {
     public Subtask create(int taskId, String name, String description) {
         Subtask addingSubtask = new Subtask(this.getTaskId(), taskId, name, description);
         Managers.getDefault().create(addingSubtask);
-        updateStatus();
         return addingSubtask;
     }
 
@@ -69,15 +70,33 @@ public class Epic extends Task {
         subtasks.clear();
         subtasks.addAll(Managers.getDefault().getSubtasks().stream()
                 .filter(subtask -> subtask.getEpicId().equals(this.getTaskId()))
-                .map(AbstractTask::getTaskId)
+                .map(TaskBase::getTaskId)
                 .collect(Collectors.toList()));
         if (subtasks.size() == 0) {
             status = TaskStatusEnum.NEW;
+            this.startTime = Optional.empty();
+            this.duration = Duration.ZERO;
+            this.endTime = Optional.empty();
         } else {
-            status = Managers.getDefault().getSubtask(subtasks.get(0)).status;
+            Subtask itemSubtask = Managers.getDefault().getSubtask(subtasks.get(0));
+            status = itemSubtask.status;
+            Subtask firstSubtask = itemSubtask;
+            Subtask lastSubtask = itemSubtask;
+            Duration sumDuration = itemSubtask.duration;
             for (int i = 1; i < subtasks.size(); i++) {
-                status = TaskStatusEnum.compareEnum(status, Managers.getDefault().getSubtask(subtasks.get(i)).status);
+                itemSubtask = Managers.getDefault().getSubtask(subtasks.get(i));
+                status = TaskStatusEnum.compareEnum(status, itemSubtask.status);
+                sumDuration = sumDuration.plus(itemSubtask.duration);
+                if (firstSubtask.compareTo(itemSubtask) < 0) {
+                    firstSubtask = itemSubtask;
+                }
+                if (lastSubtask.compareToEndTime(itemSubtask) < 0) {
+                    lastSubtask = itemSubtask;
+                }
             }
+            this.startTime = firstSubtask.getStartTime();
+            this.duration = sumDuration;
+            this.endTime = lastSubtask.getEndTime();
         }
     }
 
@@ -105,7 +124,6 @@ public class Epic extends Task {
             if (Managers.getDefault().containsSubtaskId(taskId)) {
                 Managers.getDefault().removeTask(taskId);
             }
-            updateStatus();
         } else {
             throw new IndexOutOfBoundsException("Идентификационный номер задачи " +
                     taskId + " отсутствует в коллекции.");
@@ -113,16 +131,21 @@ public class Epic extends Task {
     }
 
     public void removeAllTasks() {
-        for (Integer id : subtasks) {
+        for (Integer id : new LinkedList<>(subtasks)) {
             Managers.getDefault().removeTask(id);
         }
-        updateStatus();
     }
 
     @Override
     public Object clone() {
-        super.clone();
         Epic cloneableEpic = new Epic(this.getTaskId(), this.getName(), this.getDescription());
+        cloneableEpic.updateStatus();
+        return cloneableEpic;
+    }
+
+    @Override
+    public Object clone(String name, String description) {
+        Epic cloneableEpic = new Epic(this.getTaskId(), name, description);
         cloneableEpic.updateStatus();
         return cloneableEpic;
     }
@@ -133,26 +156,19 @@ public class Epic extends Task {
                 "name='" + this.getName() + '\'' +
                 ", description='" + this.getDescription() + '\'' +
                 ", taskId=" + this.getTaskId() + '\'' +
-                ", status=" + status.title + '\'' +
+                ", status=" + this.getStatus().title +
+                ", startTime=" + (this.getStartTime().isPresent() ?
+                LocalDateTime.ofInstant(this.getStartTime().get(), ZoneId.systemDefault()) : "null") +
+                ", duration=" + this.getDuration() +
+                ", endTime=" + (this.getEndTime().isPresent() ?
+                LocalDateTime.ofInstant(this.getEndTime().get(), ZoneId.systemDefault()) : "null") +
                 ", size=" + size() +
                 '}';
     }
 
     @Override
     public String toString(String separator) {
-        return String.format(
-                "%s" + separator +
-                        "%s" + separator +
-                        "%s" + separator +
-                        "%s" + separator +
-                        "%s" + separator +
-                        "%d\n",
-                getTaskId(),
-                TaskTypeEnum.EPIC.key,
-                getName(),
-                getStatus().key,
-                getDescription(),
-                0);
+        return toString(TaskTypeEnum.EPIC, separator);
     }
 
     @Override
@@ -165,7 +181,9 @@ public class Epic extends Task {
         if (getTaskId() != epic.getTaskId()) return false;
         if (!getName().equals(epic.getName())) return false;
         if (!getDescription().equals(epic.getDescription())) return false;
-        if (!status.equals(epic.status)) return false;
+        if (!getStatus().equals(epic.getStatus())) return false;
+        if (!getStartTime().equals(epic.getStartTime())) return false;
+        if (!this.duration.equals(epic.duration)) return false;
         return subtasks.equals(epic.subtasks);
     }
 
@@ -175,6 +193,8 @@ public class Epic extends Task {
         result = 31 * result + getDescription().hashCode();
         result = 31 * result + getTaskId();
         result = 31 * result + status.hashCode();
+        result = 31 * result + startTime.hashCode();
+        result = 31 * result + duration.hashCode();
         result = 31 * result + subtasks.hashCode();
         return result;
     }

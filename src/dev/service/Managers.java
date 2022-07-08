@@ -6,8 +6,8 @@ import java.io.File;
  При этом вызывающему неизвестен конкретный класс, только то,
  что объект, который возвращает getDefault(), реализует интерфейс TaskManager. */
 public class Managers {
-    private static TasksManager tasksManager;
-    private static HistoryManager historyManager;
+    static TasksManager tasksManager;
+    static HistoryManager historyManager;
 
     public static TasksManager getDefault() {
         if (tasksManager == null) {
@@ -16,12 +16,14 @@ public class Managers {
         return tasksManager;
     }
 
-    public static void SetFileTasksManager(File file){
+    public static FileBackedTasksManager SetFileTasksManager(File file) {
         tasksManager = FileBackedTasksManager.loadFromFile(file);
+        return (FileBackedTasksManager) tasksManager;
     }
 
-    public static void SetMemoryTasksManager(){
+    public static InMemoryTasksManager SetMemoryTasksManager() {
         tasksManager = new InMemoryTasksManager();
+        return (InMemoryTasksManager) tasksManager;
     }
 
     /*ТЗ №4: Добавьте в служебный класс Managers статический метод HistoryManager getDefaultHistory().

@@ -23,6 +23,16 @@ public class InMemoryHistoryManager implements HistoryManager {
         history.remove(id);
     }
 
+    @Override
+    public TaskBase getFirst() {
+        return history.getFirst();
+    }
+
+    @Override
+    public TaskBase getLast() {
+        return history.getLast();
+    }
+
     /* ТЗ №5: Реализация метода getHistory должна перекладывать задачи из связного списка
      в ArrayList для формирования ответа. */
     @Override

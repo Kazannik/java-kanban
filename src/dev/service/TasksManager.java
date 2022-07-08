@@ -16,6 +16,8 @@ public interface TasksManager {
 
     List<TaskBase> getAllTasks();
 
+    List<TaskBase> getPrioritizedTasks();
+
     List<TaskBase> getHighLevelTasks();
 
     Task createTask(String name);

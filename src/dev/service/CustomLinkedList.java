@@ -12,6 +12,14 @@ public class CustomLinkedList<E extends TaskBase> {
     private Node<E> first;
     private Node<E> last;
 
+    public E getFirst() {
+        return first.item;
+    }
+
+    public E getLast () {
+        return last.item;
+    }
+
     public void add(E task) {
         remove(task.getTaskId());
         linkLast(task);

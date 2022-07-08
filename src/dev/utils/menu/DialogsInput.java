@@ -1,9 +1,15 @@
 package dev.utils.menu;
 
 import dev.domain.*;
+import dev.service.InvalidTaskDateException;
 import dev.service.TasksManager;
 import dev.utils.CollectionUtils;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.Scanner;
 
 import static dev.utils.menu.DialogsPrint.printTaskStatusMenu;
@@ -14,7 +20,7 @@ import static java.lang.System.out;
 public class DialogsInput {
     public static final String EXIT_KEYS = "exit";
     public static final String BACK_KEYS = "back";
-    public static final String WARNING_MESSAGE = "Внимание! Команды задаются числовыми значениями от 1 до 9,\n"
+    public static final String WARNING_MESSAGE = "Внимание! Команды задаются числовыми значениями от 0 до 12,\n"
             + "либо последовательностью символов \"" + EXIT_KEYS + "\". Попробуйте еще раз!";
     public static final String INPUT_DESCRIPTION_CAPTION = "Описание: ";
     public static final String INPUT_STATUS_CAPTION = "Статус: ";
@@ -58,6 +64,40 @@ public class DialogsInput {
         }
     }
 
+    public static Long inputTaskDuration() {
+        Scanner scanner = getScanner();
+        out.print("Укажите продолжительность задачи: ");
+        if (scanner.hasNextInt()) {
+            return Long.parseLong(scanner.nextLine());
+        } else {
+            scanner.nextLine();
+            out.println("Внимание! Продолжительность задачи выражается только числовым значением в минутах!");
+            return null;
+        }
+    }
+
+    public static Optional<Instant> inputTaskStartTime(Optional<Instant> defaultTime) {
+        Scanner scanner = getScanner();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm");
+        LocalDateTime now = LocalDateTime.now();
+        String formatDateTime = now.format(formatter);
+        out.print("Укажите дату предполагаемого начала выполнения задачи (в формате " +
+                formatDateTime + ") или нажмите `Ввод` для сохранения прежнего значения:");
+        String resultText = scanner.nextLine().trim();
+        LocalDateTime dateTime;
+        try {
+            dateTime = LocalDateTime.parse(resultText, formatter);
+        } catch (Exception ex) {
+            out.print("Дату предполагаемого начала выполнения задачи не определена!");
+            return Optional.empty();
+        }
+        if (resultText.length() == 0) {
+            return defaultTime;
+        } else {
+            return Optional.of(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+        }
+    }
+
     public static TaskStatusEnum inputTaskStatus(TaskStatusEnum defaultStatus) {
         Scanner scanner = getScanner();
         while (true) {
@@ -98,9 +138,13 @@ public class DialogsInput {
         String description = DialogsInput.inputText(INPUT_DESCRIPTION_CAPTION);
         int taskId = CollectionUtils.getNextTaskId(manager.getAllTaskId());
         Task task = new Task(taskId, name, description);
-        manager.create(task);
-        System.out.println(INPUT_STATUS_CAPTION + task.getStatus().title + ".");
-        out.println("Созданной задаче присвоен идентификационный номер: " + task.getTaskId());
+        try {
+            manager.create(task);
+            System.out.println(INPUT_STATUS_CAPTION + task.getStatus().title + ".");
+            out.println("Созданной задаче присвоен идентификационный номер: " + task.getTaskId());
+        } catch (InvalidTaskDateException ex) {
+            out.println(ex.getMessage());
+        }
     }
 
     public static void inputUpdateTask(TasksManager manager) {
@@ -116,15 +160,20 @@ public class DialogsInput {
     }
 
     public static void inputUpdateTask(TasksManager manager, Task task) {
-        Task cloneableTask = (Task) task.clone();
-        String name = DialogsInput.inputText("Название (предыдущее значение): ", cloneableTask.getName());
-        String description = DialogsInput.inputText("Описание (предыдущее значение): ", cloneableTask.getDescription());
-        TaskStatusEnum status = inputTaskStatus(cloneableTask.getStatus());
-        cloneableTask.setName(name);
-        cloneableTask.setDescription(description);
-        cloneableTask.setStatus(status);
-        manager.update(cloneableTask);
-        System.out.println("Задача № " + cloneableTask.getTaskId() + " успешно отредактирована.");
+        String name = DialogsInput.inputText("Название (предыдущее значение): ", task.getName());
+        String description = DialogsInput.inputText("Описание (предыдущее значение): ", task.getDescription());
+        TaskStatusEnum status = inputTaskStatus(task.getStatus());
+        Optional<Instant> startTime = inputTaskStartTime(task.getStartTime());
+        long duration = inputTaskDuration();
+        Task updaterTask = (Task) task.clone(name, description, status);
+        updaterTask = (Task) updaterTask.clone(startTime);
+        updaterTask = (Task) updaterTask.clone(duration);
+        try {
+            manager.update(updaterTask);
+            System.out.println("Задача № " + task.getTaskId() + " успешно отредактирована.");
+        } catch (InvalidTaskDateException ex) {
+            out.println(ex.getMessage());
+        }
     }
 
     public static void inputCreateEpic(TasksManager manager) {
@@ -150,12 +199,10 @@ public class DialogsInput {
 
     public static void inputUpdateEpic(TasksManager manager, Integer taskId) {
         if (manager.getEpic(taskId) != null) {
-            Epic epic = (Epic) manager.getEpic(taskId).clone();
+            Epic epic = manager.getEpic(taskId);
             String name = DialogsInput.inputText("Название (предыдущее значение): ", epic.getName());
             String description = DialogsInput.inputText("Описание (предыдущее значение): ", epic.getDescription());
-            epic.setName(name);
-            epic.setDescription(description);
-            manager.update(epic);
+            manager.update((Epic) epic.clone(name, description));
             System.out.println("Эпик-задача № " + taskId + " успешно отредактирована.");
         } else {
             out.println("Внимание! Задание с идентификационным номером "
@@ -179,9 +226,13 @@ public class DialogsInput {
         String description = DialogsInput.inputText(INPUT_DESCRIPTION_CAPTION);
         int taskId = CollectionUtils.getNextTaskId(manager.getAllTaskId());
         Subtask subtask = new Subtask(epicId, taskId, name, description);
-        manager.create(subtask);
-        System.out.println(INPUT_STATUS_CAPTION + subtask.getStatus().title + ".");
-        out.println("Созданной подзадаче присвоен идентификационный номер: " + subtask.getTaskId());
+        try {
+            manager.create(subtask);
+            System.out.println(INPUT_STATUS_CAPTION + subtask.getStatus().title + ".");
+            out.println("Созданной подзадаче присвоен идентификационный номер: " + subtask.getTaskId());
+        } catch (InvalidTaskDateException ex) {
+            out.println(ex.getMessage());
+        }
     }
 
     public static void inputUpdateSubtask(TasksManager manager) {
@@ -204,16 +255,21 @@ public class DialogsInput {
     }
 
     public static void inputUpdateSubtask(TasksManager manager, Subtask subtask) {
-        Task cloneableSubtask = (Subtask) subtask.clone();
         String name = DialogsInput.inputText("Название (предыдущее значение): ",
-                cloneableSubtask.getName());
+                subtask.getName());
         String description = DialogsInput.inputText("Описание (предыдущее значение): ",
-                cloneableSubtask.getDescription());
-        TaskStatusEnum status = inputTaskStatus(cloneableSubtask.getStatus());
-        cloneableSubtask.setName(name);
-        cloneableSubtask.setDescription(description);
-        cloneableSubtask.setStatus(status);
-        manager.update(cloneableSubtask);
-        System.out.println("Подзадача № " + cloneableSubtask.getTaskId() + " успешно отредактирована.");
+                subtask.getDescription());
+        TaskStatusEnum status = inputTaskStatus(subtask.getStatus());
+        Optional<Instant> startTime = inputTaskStartTime(subtask.getStartTime());
+        long duration = inputTaskDuration();
+        Subtask updaterSubtask = (Subtask) subtask.clone(name, description, status);
+        updaterSubtask = (Subtask) updaterSubtask.clone(startTime);
+        updaterSubtask = (Subtask) updaterSubtask.clone(duration);
+        try {
+            manager.update(updaterSubtask);
+            System.out.println("Подзадача № " + subtask.getTaskId() + " успешно отредактирована.");
+        } catch (InvalidTaskDateException ex) {
+            out.println(ex.getMessage());
+        }
     }
 }

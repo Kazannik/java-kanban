@@ -74,8 +74,7 @@ public class SubMenu {
                 case "1": {
                     String name = DialogsInput.inputText("Название эпик-задачи (предыдущее значение): ", epic.getName());
                     String description = DialogsInput.inputText("Описание (предыдущее значение): ", epic.getDescription());
-                    epic.setName(name);
-                    epic.setDescription(description);
+                    manager.update((Epic) epic.clone(name, description));
                     out.println("Эпик-задача № " + epic.getTaskId() + " успешно отредактирована.");
                     return;
                 }
@@ -87,13 +86,11 @@ public class SubMenu {
                         Integer taskId = inputTaskId();
                         if (taskId == null) break;
                         if (epic.containsSubtaskId(taskId)) {
-                            Subtask subtask = (Subtask) epic.getSubtask(taskId).clone();
+                            Subtask subtask = epic.getSubtask(taskId);
                             String name = DialogsInput.inputText("Название подзадачи (предыдущее значение): ", subtask.getName());
                             String description = DialogsInput.inputText("Описание (предыдущее значение): ", subtask.getDescription());
                             TaskStatusEnum status = inputTaskStatus(subtask.getStatus());
-                            subtask.setName(name);
-                            subtask.setDescription(description);
-                            subtask.setStatus(status);
+                            subtask =(Subtask) subtask.clone(name, description, status);
                             epic.update(subtask);
                             System.out.println("Подзадача номер: " + subtask.getTaskId() + " успешно отредактирована.");
                             return;
