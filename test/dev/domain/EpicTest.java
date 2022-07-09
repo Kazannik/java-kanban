@@ -32,7 +32,7 @@ class EpicTest {
 
     @BeforeAll
     static void beforeAll() {
-        Managers.SetMemoryTasksManager();
+        Managers.setMemoryTasksManager();
         epic1 = new Epic(EPIC_ID_1, EPIC_NAME_1, EPIC_DESCRIPTION_1);
         Managers.getDefault().create(epic1);
         epic2 = new Epic(EPIC_ID_2, EPIC_NAME_2);

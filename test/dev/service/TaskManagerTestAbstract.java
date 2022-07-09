@@ -14,7 +14,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public abstract class TaskManagerTestAbsctract<T extends TasksManager> {
+public abstract class TaskManagerTestAbstract<T extends TasksManager> {
 
     T manager;
 
@@ -23,7 +23,7 @@ public abstract class TaskManagerTestAbsctract<T extends TasksManager> {
 
     @AfterEach
     void afterEach() {
-        manager.removeAllTasks();
+        manager.removeAll();
     }
 
     @Test
@@ -317,6 +317,27 @@ public abstract class TaskManagerTestAbsctract<T extends TasksManager> {
     void removeAllTasks() {
         assertEquals(4, manager.allSize());
         manager.removeAllTasks();
+        assertEquals(3, manager.allSize());
+    }
+
+    @Test
+    void removeAllEpics() {
+        assertEquals(4, manager.allSize());
+        manager.removeAllEpics();
+        assertEquals(1, manager.allSize());
+    }
+
+    @Test
+    void removeAllSubtask() {
+        assertEquals(4, manager.allSize());
+        manager.removeAllSubtasks();
+        assertEquals(2, manager.allSize());
+    }
+
+    @Test
+    void removeAll() {
+        assertEquals(4, manager.allSize());
+        manager.removeAll();
         assertEquals(0, manager.allSize());
     }
 }

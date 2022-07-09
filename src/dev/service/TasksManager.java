@@ -8,6 +8,9 @@ import dev.domain.TaskBase;
 import java.util.List;
 
 public interface TasksManager {
+
+    HistoryManager getHistoryManager();
+
     List<Epic> getEpics();
 
     List<Task> getTasks();
@@ -71,4 +74,10 @@ public interface TasksManager {
     void removeTask(int taskId);
 
     void removeAllTasks();
+
+    void removeAllEpics();
+
+    void removeAllSubtasks();
+
+    void removeAll();
 }

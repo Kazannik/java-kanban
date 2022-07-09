@@ -2,6 +2,7 @@ import dev.service.Managers;
 import dev.service.TasksManager;
 import dev.utils.menu.MainMenu;
 
+import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
@@ -11,9 +12,14 @@ public class Main {
         System.out.println("Трекер задач");
         // Для выбора менеджера работы с памятью
         // следует выполнить команду: Managers.SetMemoryTasksManager();
-        Path path = FileSystems.getDefault().getPath("java-kanban.csv");
-        Managers.SetFileTasksManager(path.toFile());
-        TasksManager manager = Managers.getDefault();
-        MainMenu.Menu(manager);
+        try {
+            Path path = FileSystems.getDefault().getPath("java-kanban.csv");
+            path.toFile().createNewFile();
+            Managers.setFileTasksManager(path.toFile());
+            TasksManager manager = Managers.getDefault();
+            MainMenu.Menu(manager);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 }

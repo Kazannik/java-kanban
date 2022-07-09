@@ -6,19 +6,34 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
 
-public class TaskPlanner extends LinkedList {
+public class TaskPlanner extends LinkedList<TaskBase> {
 
     private static boolean getEquals(TaskBase o1, TaskBase o2) {
-        return ((o1.getStartTime().equals(o2.getStartTime())) ||
-                o1.getStartTime().get().isBefore(o2.getStartTime().get())) &&
-                ((o1.getEndTime().equals(o2.getEndTime())) ||
-                        o1.getEndTime().get().isAfter(o2.getEndTime().get()));
+        return (
+                o1.getStartTime().equals(o2.getStartTime())
+                        || (
+                        o1.getStartTime().get().isBefore(o2.getStartTime().get()) &&
+                                o1.getEndTime().get().isAfter(o2.getStartTime().get()))
+                        || (
+                        o1.getStartTime().get().isAfter(o2.getStartTime().get()) &&
+                                o1.getStartTime().get().isBefore(o2.getEndTime().get()))
+        ) && (
+                o1.getEndTime().equals(o2.getEndTime())
+                        || (
+                        o1.getEndTime().get().isAfter(o2.getEndTime().get()) &&
+                                o1.getStartTime().get().isBefore(o2.getEndTime().get()))
+                        || (
+                        o1.getEndTime().get().isBefore(o2.getEndTime().get()) &&
+                                o1.getEndTime().get().isAfter(o2.getStartTime().get()))
+        );
     }
 
-    public void add(TaskBase task) {
+    @Override
+    public boolean add(TaskBase task) {
         if (task.getStartTime().isPresent()) {
-            super.add(task);
+            return super.add(task);
         }
+        return false;
     }
 
     public Optional<TaskBase> getCurrentTask(TaskBase o) {

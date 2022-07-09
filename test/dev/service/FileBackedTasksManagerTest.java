@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class FileBackedTasksManagerTest extends TaskManagerTestAbsctract<InMemoryTasksManager> {
+class FileBackedTasksManagerTest extends TaskManagerTestAbstract<InMemoryTasksManager> {
 
     static final Path defualtPath = FileSystems.getDefault().getPath("java-kanban-test.csv");
 
@@ -53,10 +53,10 @@ class FileBackedTasksManagerTest extends TaskManagerTestAbsctract<InMemoryTasksM
             "\n",
             "5|4|3|2"};
 
-    static final String[] linesTastA = {
+    static final String[] linesTestA = {
             "id|type|name|status|start|duration|description|epic\n"};
 
-    static final String[] linesTastB = {
+    static final String[] linesTestB = {
             "id|type|name|status|start|duration|description|epic\n",
             "0|TASK|Задача 1|1|1666936000000|10|Создаю обычную задачу с индексом 0.|0\n",
             "1|TASK|Задача 2|1|1676936000000|10|Создаю обычную задачу с индексом 1.|0\n",
@@ -64,7 +64,7 @@ class FileBackedTasksManagerTest extends TaskManagerTestAbsctract<InMemoryTasksM
             "\n",
             "2|1"};
 
-    static final String[] linesTastC = {
+    static final String[] linesTestC = {
             "id|type|name|status|start|duration|description|epic\n",
             "0|TASK|Задача 1|1|1666936000000|10|Создаю обычную задачу с индексом 0.|0\n",
             "1|TASK|Задача 2|1|1676936000000|10|Создаю обычную задачу с индексом 1.|0\n",
@@ -91,8 +91,8 @@ class FileBackedTasksManagerTest extends TaskManagerTestAbsctract<InMemoryTasksM
     @Override
     @BeforeEach
     void beforeEach() {
-        manager = Managers.SetFileTasksManager(defualtPath.toFile());
-        manager.removeAllTasks();
+        manager = Managers.setFileTasksManager(defualtPath.toFile());
+        manager.removeAll();
         manager.createTask("Первая задача!");
         Epic epic = manager.createEpic("Эпик-задача");
         manager.createSubtask(epic.getTaskId(), "Подзадача 1");
@@ -103,18 +103,18 @@ class FileBackedTasksManagerTest extends TaskManagerTestAbsctract<InMemoryTasksM
     @Test
     void testFileBackedTasksManager() {
         // ТЗ №7: a. Пустой список задач.
-        createTestFile(linesTastA);
-        manager = Managers.SetFileTasksManager(testFilePath.toFile());
+        createTestFile(linesTestA);
+        manager = Managers.setFileTasksManager(testFilePath.toFile());
         assertEquals(0, manager.allSize());
 
         // ТЗ №7: b. Эпик без подзадач.
-        createTestFile(linesTastB);
-        manager = Managers.SetFileTasksManager(testFilePath.toFile());
+        createTestFile(linesTestB);
+        manager = Managers.setFileTasksManager(testFilePath.toFile());
         assertEquals(0, manager.getEpic(2).size());
 
         // ТЗ №7: c. Пустой список истории.
-        createTestFile(linesTastC);
-        manager = Managers.SetFileTasksManager(testFilePath.toFile());
+        createTestFile(linesTestC);
+        manager = Managers.setFileTasksManager(testFilePath.toFile());
         assertEquals(0, Managers.getDefaultHistory().getHistory().size());
     }
 
@@ -145,7 +145,7 @@ class FileBackedTasksManagerTest extends TaskManagerTestAbsctract<InMemoryTasksM
             @Override
             public void execute() {
                 testFilePath.toFile().setWritable(false);
-                manager = Managers.SetFileTasksManager(testFilePath.toFile());
+                manager = Managers.setFileTasksManager(testFilePath.toFile());
             }
         });
         assertEquals("Произошла ошибка во время записи в файл.", createFileException.getMessage());

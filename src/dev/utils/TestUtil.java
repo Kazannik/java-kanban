@@ -6,6 +6,7 @@ import dev.service.InvalidTaskDateException;
 import dev.service.Managers;
 import dev.service.TasksManager;
 
+import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -25,7 +26,7 @@ public final class TestUtil {
     и подзадачи сохранился, а статус эпика рассчитался по статусам подзадач.
     И, наконец, попробуйте удалить одну из задач и один из эпиков. */
     public static void testSprint3() {
-        Managers.SetMemoryTasksManager();
+        Managers.setMemoryTasksManager();
         TasksManager manager = Managers.getDefault();
 
         System.out.println("Тестирование приложения по условиям, заданным в техническом задании Спринта №3:");
@@ -126,7 +127,7 @@ public final class TestUtil {
     -	вызовите разные методы интерфейса TaskManager и напечатайте историю просмотров
      после каждого вызова. */
     public static void testSprint4() {
-        Managers.SetMemoryTasksManager();
+        Managers.setMemoryTasksManager();
         TasksManager manager = Managers.getDefault();
 
         System.out.println("Тестирование приложения по условиям, заданным в техническом задании Спринта №4:");
@@ -207,7 +208,7 @@ public final class TestUtil {
         •	удалите эпик с тремя подзадачами и убедитесь, что из истории удалился как сам эпик, так и все его подзадачи.
     */
     public static void testSprint5() {
-        Managers.SetMemoryTasksManager();
+        Managers.setMemoryTasksManager();
         TasksManager manager = Managers.getDefault();
 
         manager.removeAllTasks();
@@ -294,14 +295,20 @@ public final class TestUtil {
    4.	Проверьте, что история просмотра восстановилась верно и все задачи,
     эпики, подзадачи, которые были в старом, есть в новом менеджере. */
     public static void testSprint6() {
-        Managers.getDefault().removeAllTasks();
         System.out.println("Тестирование приложения по условиям, заданным в техническом задании Спринта №6:");
-
-        Path path = FileSystems.getDefault().getPath("java-kanban.csv");
-        Managers.SetFileTasksManager(path.toFile());
-
+        Path path;
+        try {
+            path = FileSystems.getDefault().getPath("java-kanban.csv");
+            if (path.toFile().exists()) {
+                path.toFile().delete();
+            }
+            path.toFile().createNewFile();
+            Managers.setFileTasksManager(path.toFile());
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+            return;
+        }
         TasksManager manager = Managers.getDefault();
-        manager.removeAllTasks();
 
         System.out.println("\n1.\tЗаведите несколько разных задач, эпиков и подзадач;");
         int nextTaskId = CollectionUtils.getNextTaskId(manager.getAllTaskId());
@@ -362,12 +369,20 @@ public final class TestUtil {
     }
 
     public static void testSprint7() {
-        Path path = FileSystems.getDefault().getPath("java-kanban.csv");
-        Managers.SetFileTasksManager(path.toFile());
-        TasksManager manager = Managers.getDefault();
-        manager.removeAllTasks();
-
         System.out.println("Тестирование приложения по условиям, заданным в техническом задании Спринта №7:");
+        Path path;
+        try {
+            path = FileSystems.getDefault().getPath("java-kanban.csv");
+            if (path.toFile().exists()) {
+                path.toFile().delete();
+            }
+            path.toFile().createNewFile();
+            Managers.setFileTasksManager(path.toFile());
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+            return;
+        }
+        TasksManager manager = Managers.getDefault();
 
         System.out.println("\n1.\tСоздам две задачи и эпик с тремя подзадачами;");
 
@@ -434,5 +449,4 @@ public final class TestUtil {
 
         System.out.println("Тест по ТЗ №7 выполнен.");
     }
-
 }

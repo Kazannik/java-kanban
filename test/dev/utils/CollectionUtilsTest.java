@@ -11,7 +11,7 @@ class CollectionUtilsTest {
 
     @Test
     void getNextTaskId() {
-        Managers.SetMemoryTasksManager();
+        Managers.setMemoryTasksManager();
         TasksManager manager = Managers.getDefault();
         int nextTaskId = CollectionUtils.getNextTaskId(manager.getAllTaskId());
         Assertions.assertEquals(0, nextTaskId);

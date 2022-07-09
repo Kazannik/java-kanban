@@ -11,15 +11,22 @@ public class InMemoryTasksManager implements TasksManager {
     protected final Map<Integer, Task> tasks;
     protected final Map<Integer, Epic> epics;
     protected final Map<Integer, Subtask> subtasks;
-    protected final Set prioritizedTasks;
+    protected final Set<TaskBase> prioritizedTasks;
     protected final TaskPlanner planner;
+    protected final HistoryManager historyManager;
 
     public InMemoryTasksManager() {
         tasks = new HashMap<>();
         epics = new HashMap<>();
         subtasks = new HashMap<>();
         prioritizedTasks = new TreeSet<>(new TaskComparator());
+        historyManager = new InMemoryHistoryManager();
         planner = new TaskPlanner();
+    }
+
+    @Override
+    public HistoryManager getHistoryManager() {
+        return historyManager;
     }
 
     @Override
@@ -258,7 +265,7 @@ public class InMemoryTasksManager implements TasksManager {
     public Task getTask(int taskId) {
         if (tasks.containsKey(taskId)) {
             Task task = tasks.get(taskId);
-            Managers.getDefaultHistory().add(task);
+            historyManager.add(task);
             return task;
         } else {
             throw new IndexOutOfBoundsException("Задача с заданным идентификационным номером отсутствует в коллекции.");
@@ -269,7 +276,7 @@ public class InMemoryTasksManager implements TasksManager {
     public Epic getEpic(int taskId) {
         if (epics.containsKey(taskId)) {
             Epic epic = epics.get(taskId);
-            Managers.getDefaultHistory().add(epic);
+            historyManager.add(epic);
             return epic;
         } else {
             throw new IndexOutOfBoundsException("Эпик-задача с заданным идентификационным номером "
@@ -281,7 +288,7 @@ public class InMemoryTasksManager implements TasksManager {
     public Subtask getSubtask(int taskId) {
         if (subtasks.containsKey(taskId)) {
             Subtask subtask = subtasks.get(taskId);
-            Managers.getDefaultHistory().add(subtask);
+            historyManager.add(subtask);
             return subtask;
         } else {
             throw new IndexOutOfBoundsException("Подзадача с заданным идентификационным номером "
@@ -329,21 +336,24 @@ public class InMemoryTasksManager implements TasksManager {
             tasks.remove(taskId);
             prioritizedTasks.remove(task);
             planner.remove(task);
-            Managers.getDefaultHistory().remove(taskId);
+            historyManager.remove(taskId);
         } else if (epics.containsKey(taskId)) {
             for (Integer subtaskId : epics.get(taskId).subtaskIdList()) {
+                Subtask subtask = subtasks.get(subtaskId);
+                prioritizedTasks.remove(subtask);
+                planner.remove(subtask);
                 subtasks.remove(subtaskId);
-                Managers.getDefaultHistory().remove(subtaskId);
+                historyManager.remove(subtaskId);
             }
             epics.remove(taskId);
-            Managers.getDefaultHistory().remove(taskId);
+            historyManager.remove(taskId);
         } else if (subtasks.containsKey(taskId)) {
             Subtask subtask = subtasks.get(taskId);
             prioritizedTasks.remove(subtask);
             planner.remove(subtask);
             Epic epic = epics.get(subtask.getEpicId());
             subtasks.remove(taskId);
-            Managers.getDefaultHistory().remove(taskId);
+            historyManager.remove(taskId);
             epic.updateStatus();
         } else {
             throw new IndexOutOfBoundsException("Идентификационный номер (эпик/под)задачи отсутствует в коллекции.");
@@ -352,11 +362,42 @@ public class InMemoryTasksManager implements TasksManager {
 
     @Override
     public void removeAllTasks() {
+        for (Task task: this.getTasks()) {
+            prioritizedTasks.remove(task);
+            planner.remove(task);
+            historyManager.remove(task.getTaskId());
+        }
+        tasks.clear();
+    }
+
+    @Override
+    public void removeAllEpics() {
+        removeAllSubtasks();
+        for (Epic epic: this.getEpics()) {
+            prioritizedTasks.remove(epic);
+            planner.remove(epic);
+            historyManager.remove(epic.getTaskId());
+        }
+        epics.clear();
+    }
+
+    @Override
+    public void removeAllSubtasks() {
+        for (Subtask subtask: this.getSubtasks()) {
+            prioritizedTasks.remove(subtask);
+            planner.remove(subtask);
+            historyManager.remove(subtask.getTaskId());
+        }
+        subtasks.clear();
+    }
+
+    @Override
+    public void removeAll() {
         tasks.clear();
         epics.clear();
         subtasks.clear();
         prioritizedTasks.clear();
         planner.clear();
-        Managers.getDefaultHistory().clear();
+        historyManager.clear();
     }
 }

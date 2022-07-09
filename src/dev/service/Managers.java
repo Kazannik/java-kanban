@@ -7,7 +7,8 @@ import java.io.File;
  что объект, который возвращает getDefault(), реализует интерфейс TaskManager. */
 public class Managers {
     static TasksManager tasksManager;
-    static HistoryManager historyManager;
+
+    private Managers(){}
 
     public static TasksManager getDefault() {
         if (tasksManager == null) {
@@ -16,12 +17,12 @@ public class Managers {
         return tasksManager;
     }
 
-    public static FileBackedTasksManager SetFileTasksManager(File file) {
+    public static FileBackedTasksManager setFileTasksManager(File file) {
         tasksManager = FileBackedTasksManager.loadFromFile(file);
         return (FileBackedTasksManager) tasksManager;
     }
 
-    public static InMemoryTasksManager SetMemoryTasksManager() {
+    public static InMemoryTasksManager setMemoryTasksManager() {
         tasksManager = new InMemoryTasksManager();
         return (InMemoryTasksManager) tasksManager;
     }
@@ -29,9 +30,6 @@ public class Managers {
     /*ТЗ №4: Добавьте в служебный класс Managers статический метод HistoryManager getDefaultHistory().
     Он должен возвращать объект InMemoryHistoryManager — историю просмотров. */
     public static HistoryManager getDefaultHistory() {
-        if (historyManager == null) {
-            historyManager = new InMemoryHistoryManager();
-        }
-        return historyManager;
+        return getDefault().getHistoryManager();
     }
 }

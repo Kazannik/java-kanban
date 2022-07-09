@@ -101,12 +101,12 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
     }
 
     private void createHistory(String history) {
-        Managers.getDefaultHistory().clear();
+        historyManager.clear();
         if (history != null) {
             String[] tasks = history.split("[" + PARAM_SEPARATOR + "]");
             for (String id : tasks) {
                 int taskId = Integer.parseInt(id);
-                Managers.getDefaultHistory().add(getTaskBase(taskId));
+                historyManager.add(getTaskBase(taskId));
             }
         }
     }

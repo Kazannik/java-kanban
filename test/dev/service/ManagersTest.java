@@ -25,13 +25,13 @@ class ManagersTest {
 
     @Test
     void setFileTasksManager() {
-        Managers.SetFileTasksManager(path.toFile());
+        Managers.setFileTasksManager(path.toFile());
         Assertions.assertTrue(Managers.getDefault() instanceof FileBackedTasksManager);
     }
 
     @Test
     void setMemoryTasksManager() {
-        Managers.SetMemoryTasksManager();
+        Managers.setMemoryTasksManager();
         Assertions.assertTrue(Managers.getDefault() instanceof InMemoryTasksManager);
     }
 

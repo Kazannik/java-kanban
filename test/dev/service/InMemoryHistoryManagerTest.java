@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class InMemoryHistoryManagerTest {
 
@@ -20,17 +20,24 @@ class InMemoryHistoryManagerTest {
 
     @BeforeEach
     void beforeEach() {
-        manager.removeAllTasks();
+        manager.removeAll();
         manager.createTask("Первая задача!");
         Epic epic = manager.createEpic("Эпик-задача");
         manager.createSubtask(epic.getTaskId(), "Подзадача 1");
         manager.createSubtask(epic.getTaskId(), "Подзадача 2");
+
+        manager.getTaskBase(0);
+        manager.getTaskBase(1);
+        manager.getTaskBase(2);
+        manager.getTaskBase(3);
+        manager.getTaskBase(3);
+        manager.getTaskBase(2);
     }
 
     @Test
     void testHistoryManager() {
         // ТЗ №7: a. Пустая история задач.
-        manager.removeAllTasks();
+        manager.removeAll();
         assertEquals(0, Managers.getDefaultHistory().getHistory().size());
 
         // ТЗ №7: b. Дублирование.
@@ -66,5 +73,29 @@ class InMemoryHistoryManagerTest {
         assertEquals(1, Managers.getDefaultHistory().getHistory().size());
         assertEquals(1, Managers.getDefaultHistory().getFirst().getTaskId());
         assertEquals(1, Managers.getDefaultHistory().getLast().getTaskId());
+    }
+
+    @Test
+    void removeTasks() {
+        // ТЗ №7: a. Пустая история задач.
+        manager.removeAllTasks();
+        assertEquals(3, Managers.getDefaultHistory().getHistory().size());
+        assertEquals(0, manager.getTasks().size());
+    }
+
+    @Test
+    void removeEpics() {
+        // ТЗ №7: a. Пустая история эпик-задач.
+        manager.removeAllEpics();
+        assertEquals(1, Managers.getDefaultHistory().getHistory().size());
+        assertEquals(0, manager.getEpics().size());
+    }
+
+    @Test
+    void removeSubtasks() {
+        // ТЗ №7: a. Пустая история подзадач.
+        manager.removeAllSubtasks();
+        assertEquals(2, manager.getHistoryManager().getHistory().size());
+        assertEquals(0, manager.getSubtasks().size());
     }
 }
