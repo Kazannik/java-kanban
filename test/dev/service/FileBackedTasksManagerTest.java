@@ -115,7 +115,7 @@ class FileBackedTasksManagerTest extends TaskManagerTestAbstract<InMemoryTasksMa
         // ТЗ №7: c. Пустой список истории.
         createTestFile(linesTestC);
         manager = Managers.setFileTasksManager(testFilePath.toFile());
-        assertEquals(0, Managers.getDefaultHistory().getHistory().size());
+        assertEquals(0, manager.getHistoryManager().getHistory().size());
     }
 
     @Test

@@ -53,7 +53,7 @@ public class MainMenu {
                     removeTask(manager);
                     break;
                 case "7":
-                    getHistory();
+                    getHistory(manager);
                     break;
                 case "8":
                     TestUtil.testSprint3();
@@ -134,9 +134,9 @@ public class MainMenu {
         }
     }
 
-    static void getHistory() {
+    static void getHistory(TasksManager manager) {
         System.out.println("Вывод истории просмотра");
-        List<TaskBase> tasks = Managers.getDefaultHistory().getHistory();
+        List<TaskBase> tasks = manager.getHistoryManager().getHistory();
         ReportUtils.printTasksCollection(tasks, false);
     }
 

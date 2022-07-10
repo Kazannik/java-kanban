@@ -29,7 +29,7 @@ public class Managers {
 
     /*ТЗ №4: Добавьте в служебный класс Managers статический метод HistoryManager getDefaultHistory().
     Он должен возвращать объект InMemoryHistoryManager — историю просмотров. */
-    public static HistoryManager getDefaultHistory() {
-        return getDefault().getHistoryManager();
+    public static InMemoryHistoryManager getDefaultHistory() {
+        return new InMemoryHistoryManager();
     }
 }

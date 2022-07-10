@@ -20,7 +20,7 @@ public class InMemoryTasksManager implements TasksManager {
         epics = new HashMap<>();
         subtasks = new HashMap<>();
         prioritizedTasks = new TreeSet<>(new TaskComparator());
-        historyManager = new InMemoryHistoryManager();
+        historyManager = Managers.getDefaultHistory();
         planner = new TaskPlanner();
     }
 

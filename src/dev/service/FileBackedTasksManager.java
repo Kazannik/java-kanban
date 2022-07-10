@@ -119,7 +119,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
                 writer.write(task.toString(PARAM_SEPARATOR));
             }
             writer.write("\n");
-            String history = toString(Managers.getDefaultHistory());
+            String history = toString(historyManager);
             writer.write(history);
         } catch (IOException e) {
             throw new ManagerSaveException("Произошла ошибка во время записи в файл.", e.getCause());

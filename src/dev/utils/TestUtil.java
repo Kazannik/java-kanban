@@ -179,7 +179,7 @@ public final class TestUtil {
         ReportUtils.printTasksCollection(manager.getHighLevelTasks(), true);
 
         System.out.println("\nПечатаем историю просмотра. (ТЗ №5: Ограничения на 10 позиций больше нет!)");
-        ReportUtils.printTasksCollection(Managers.getDefaultHistory().getHistory(), false);
+        ReportUtils.printTasksCollection(manager.getHistoryManager().getHistory(), false);
 
         System.out.println("\nВызываем задания 12 раз в цикле по одному.");
         List<Integer> taskIsCollection = manager.getAllTaskId();
@@ -195,7 +195,7 @@ public final class TestUtil {
         }
 
         System.out.println("\nПечатаем историю просмотра. (ТЗ №5: Ограничения на 10 позиций больше нет!)");
-        ReportUtils.printTasksCollection(Managers.getDefaultHistory().getHistory(), false);
+        ReportUtils.printTasksCollection(manager.getHistoryManager().getHistory(), false);
 
         System.out.println("Тест по ТЗ №4 выполнен.");
     }
@@ -264,7 +264,7 @@ public final class TestUtil {
         System.out.println("\n3.\tПосле каждого запроса выведите историю и убедитесь, что в ней нет повторов;");
 
         System.out.println("\nПечатаем историю просмотра.");
-        ReportUtils.printTasksCollection(Managers.getDefaultHistory().getHistory(), false);
+        ReportUtils.printTasksCollection(manager.getHistoryManager().getHistory(), false);
 
         System.out.println("\n4.\tУдалите задачу, которая есть в истории, и проверьте," +
                 " что при печати она не будет выводиться;");
@@ -273,7 +273,7 @@ public final class TestUtil {
         System.out.println("\nУдалили задачу с идентификатором 0.");
 
         System.out.println("\nПечатаем историю просмотра.");
-        ReportUtils.printTasksCollection(Managers.getDefaultHistory().getHistory(), false);
+        ReportUtils.printTasksCollection(manager.getHistoryManager().getHistory(), false);
 
         System.out.println("\n5.\tУдалите эпик с тремя подзадачами и убедитесь, что из истории удалился как сам эпик," +
                 " так и все его подзадачи.");
@@ -282,7 +282,7 @@ public final class TestUtil {
         System.out.println("\nУдалили эпик с идентификатором 2.");
 
         System.out.println("\nПечатаем историю просмотра.");
-        ReportUtils.printTasksCollection(Managers.getDefaultHistory().getHistory(), false);
+        ReportUtils.printTasksCollection(manager.getHistoryManager().getHistory(), false);
 
         System.out.println("Тест по ТЗ №5 выполнен.");
     }
@@ -359,13 +359,13 @@ public final class TestUtil {
             ReportUtils.printTask(randomTask, false);
         }
         System.out.println("\nПечатаем историю просмотра.");
-        ReportUtils.printTasksCollection(Managers.getDefaultHistory().getHistory(), false);
+        ReportUtils.printTasksCollection(manager.getHistoryManager().getHistory(), false);
 
         System.out.println("\n3.\tСоздаем новый FileBackedTasksManager менеджер из этого же файла.;");
         manager = FileBackedTasksManager.loadFromFile(path.toFile());
 
         System.out.println("\nПечатаем историю просмотра.");
-        ReportUtils.printTasksCollection(Managers.getDefaultHistory().getHistory(), false);
+        ReportUtils.printTasksCollection(manager.getHistoryManager().getHistory(), false);
     }
 
     public static void testSprint7() {

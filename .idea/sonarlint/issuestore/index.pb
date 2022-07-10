@@ -33,3 +33,33 @@ M
 test/dev/domain/TaskTest.java,d\f\dfa8b5c0510cc479c7f27952de2f35f5ffbd3d39
 U
 %test/dev/domain/TaskTestAbstract.java,1\4\1403a755cc90be282a5d0edb9efb0e6dbc146cd0
+U
+%test/dev/domain/TaskTypeEnumTest.java,2\3\23d975ed807ca53220097fa8557439d40005ad59
+Y
+)src/dev/service/ManagerSaveException.java,0\8\08c3a07a85c0c3060917a2b836d6288199e83bbe
+]
+-src/dev/service/InvalidTaskDateException.java,7\3\738a55a65d49a0ef853eb20cee6771b8753ee88c
+P
+ src/dev/domain/TaskTypeEnum.java,1\d\1d6dff1f7de18056f69aed30264899e2344f036f
+O
+src/dev/utils/menu/SubMenu.java,5\b\5b817fdcf8a609eaedad3705c9c70536e3139d62
+R
+"src/dev/domain/TaskComparator.java,c\3\c3696f7637f3a0c363365303e9861c6b3bdb864d
+U
+%src/dev/service/CustomLinkedList.java,3\9\39e49e47def2aa1561b9ce5eb97462e46a41871e
+H
+src/dev/domain/Epic.java,5\f\5f6b47977ae3b62c3d50f7da6bc55e2c8f96713b
+W
+'test/dev/domain/TaskStatusEnumTest.java,2\c\2cdfea5b258e4088ea86e4ab4a250615efe07cb6
+W
+'test/dev/utils/CollectionUtilsTest.java,3\7\3726d2410b636da2fe891dd162660a9a872bd257
+M
+test/dev/domain/EpicTest.java,b\c\bc1eed7f3e3884410a4d6725f10d3ce0767c433b
+=
+src/Main.java,9\2\924f089edb4af5ee45c8a9d1129cd28e2b368138
+P
+ src/dev/service/TaskPlanner.java,9\a\9a006bae51508cc5daa1e15b99ec306b3ec9424a
+U
+%test/dev/service/TaskPlannerTest.java,0\1\015beb4abf42e799eb1682c17e81d7fe1a626144
+Q
+!src/dev/service/TasksManager.java,b\d\bd344803652b374d03ec26f8525367495fa9b99e
