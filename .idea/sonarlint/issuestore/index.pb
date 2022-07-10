@@ -63,3 +63,9 @@ U
 %test/dev/service/TaskPlannerTest.java,0\1\015beb4abf42e799eb1682c17e81d7fe1a626144
 Q
 !src/dev/service/TasksManager.java,b\d\bd344803652b374d03ec26f8525367495fa9b99e
+]
+-test/dev/service/TaskManagerTestAbstract.java,3\1\315aad9ceaa0f166a3e9207290195411db318f9e
+^
+.test/dev/service/InMemoryTasksManagerTest.java,b\4\b49a45386c240fead1ae714bde00bd4a88b2b476
+`
+0test/dev/service/FileBackedTasksManagerTest.java,0\a\0aa82d458e3b67915b177e601c4cf240a4827f1d
