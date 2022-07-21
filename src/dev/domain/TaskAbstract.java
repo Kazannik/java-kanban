@@ -1,5 +1,6 @@
 package dev.domain;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
@@ -97,7 +98,7 @@ public abstract class TaskAbstract implements TaskBase {
     public abstract Object clone();
 
     @Override
-    public abstract Object clone(String name, String description);
+    public abstract Object clone(String name, String description) throws IOException;
 
     @Override
     public abstract boolean equals(Object o);

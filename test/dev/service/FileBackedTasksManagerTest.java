@@ -13,10 +13,9 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class FileBackedTasksManagerTest extends TaskManagerTestAbstract<InMemoryTasksManager> {
+class FileBackedTasksManagerTest extends TaskManagerTestAbstract<FileBackedTasksManager> {
 
-    static final Path defualtPath = FileSystems.getDefault().getPath("java-kanban-test.csv");
-
+    static final Path defaultPath = FileSystems.getDefault().getPath("java-kanban-test.csv");
     static final Path testFilePath = FileSystems.getDefault().getPath("java-kanban-error-test.csv");
 
     static final String[] testFileLines = {
@@ -90,8 +89,8 @@ class FileBackedTasksManagerTest extends TaskManagerTestAbstract<InMemoryTasksMa
 
     @Override
     @BeforeEach
-    void beforeEach() {
-        manager = Managers.setFileTasksManager(defualtPath.toFile());
+    void beforeEach() throws IOException {
+        manager = Managers.setFileTasksManager(defaultPath.toFile());
         manager.removeAll();
         manager.createTask("Первая задача!");
         Epic epic = manager.createEpic("Эпик-задача");

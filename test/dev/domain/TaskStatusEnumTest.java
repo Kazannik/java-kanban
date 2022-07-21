@@ -48,4 +48,10 @@ class TaskStatusEnumTest {
         assertEquals(TaskStatusEnum.IN_PROGRESS, TaskStatusEnum.fromKey("2"));
         assertEquals(TaskStatusEnum.NEW, TaskStatusEnum.fromKey("99"));
     }
+
+    @Test
+    void fromString() {
+        assertEquals(TaskStatusEnum.IN_PROGRESS, TaskStatusEnum.fromString("IN_PROGRESS"));
+        assertEquals(TaskStatusEnum.NEW, TaskStatusEnum.fromString("PROGRESS"));
+    }
 }

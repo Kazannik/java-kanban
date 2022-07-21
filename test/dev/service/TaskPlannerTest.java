@@ -34,7 +34,7 @@ class TaskPlannerTest {
         firstTask = (Task) firstTask.clone(35);
         firstTask = (Task) firstTask.clone(getTime(2022, 7, 1, 12, 0));
         planner.add(firstTask);
-         Assertions.assertTrue(planner.contains(firstTask));
+        Assertions.assertTrue(planner.contains(firstTask));
     }
 
     @Test
